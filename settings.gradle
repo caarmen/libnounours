@@ -1,0 +1,6 @@
+rootProject.name = 'Nounours-gradle'
+
+include 'libnounours'
+
+include 'swingnours'
+
