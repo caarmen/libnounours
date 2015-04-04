@@ -1,0 +1,9 @@
+ImageId,FeatureId,X,Y
+BothUp,LH,106,117
+BothUp,RH,201,113
+RightUp,RH,201,113
+RightUp,LH,100,191
+LeftUp,LH,98,130
+LeftUp,RH,207,199
+BothDown,LH,102,191
+BothDown,RH,204,199

@@ -1,0 +1,9 @@
+ImageId,FeatureId,AdjacentImageId
+BothUp,LH,RightUp
+BothUp,RH,LeftUp
+RightUp,LH,BothUp
+RightUp,RH,BothDown
+LeftUp,RH,BothUp
+LeftUp,LH,BothDown
+BothDown,RH,RightUp
+BothDown,LH,LeftUp
