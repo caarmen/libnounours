@@ -1,12 +1,30 @@
 apply plugin: 'java'
+apply plugin: 'gradle-one-jar'
 
-sourceCompatibility = 1.5
 version = '1.0'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.github.rholder:gradle-one-jar:1.0.4'
+    }
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile project(':libnounours')
 }
+
+// This task will create a jar containing the CLI program class
+// as well as all the library classes, which can be run with
+// java -jar.
+task cliStandaloneJar(type: OneJar) {
+    mainClass = 'ca.rmen.nounours.swing.SwingNounours'
+}
+
+build.dependsOn cliStandaloneJar

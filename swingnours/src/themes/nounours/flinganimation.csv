@@ -1,0 +1,4 @@
+Id,X,Y,Width,Height,MinVelX,MinVelY,AnimationId,VariableSpeed
+1,0,100,320,355,10000,0,ReverseSpin,true
+1,0,100,320,355,-10000,0,Spin,true
+2,0,100,320,355,0,-5000,Boing2,false
