@@ -55,7 +55,8 @@ public class SwingNounours extends Nounours implements ActionListener {
      *            Menu containing the list of animations.
      * @param optionMenu
      * @param helpMenu
-     * @param propertiesFile
+     * @param globalPropertiesFile
+     * @param defaultThemePropertiesFile
      * @param featureFile
      * @param imageFile
      * @param imageFeatureFile
