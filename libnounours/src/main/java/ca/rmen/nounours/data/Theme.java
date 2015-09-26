@@ -319,7 +319,7 @@ public class Theme {
         return defaultImage;
     }
 
-    private boolean updateFile(File themeDir, String fileName) throws IllegalStateException, IOException,
+    private boolean updateFile(File themeDir, String fileName) throws IllegalStateException,
             URISyntaxException {
         File file = new File(themeDir, fileName);
         if (!Util.downloadFile(new URI(location + "/" + fileName), file)) {
@@ -336,8 +336,7 @@ public class Theme {
         if (location.getProtocol().toLowerCase().startsWith("jar")) {
             String fullPath = location.toString() + fileName;
             String filePath = fullPath.substring(fullPath.indexOf("!") + 1);
-            InputStream is = getClass().getResourceAsStream(filePath);
-            return is;
+            return getClass().getResourceAsStream(filePath);
         }
         File file = new File(themeDir, fileName);
         if (!file.exists() || forceDownload) {

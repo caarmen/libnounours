@@ -204,13 +204,11 @@ public abstract class Nounours {
     }
 
     private Image getRandomImage(Image fromImage) {
-        Map<String, Image> images = getImages();
         List<Image> allAdjacentImages = fromImage.getAllAdjacentImages();
         if (allAdjacentImages.size() == 0)
             return null;
         int toImageNumber = random.nextInt(allAdjacentImages.size());
-        Image toImage = allAdjacentImages.get(toImageNumber);
-        return toImage;
+        return allAdjacentImages.get(toImageNumber);
     }
 
     /**
@@ -386,7 +384,6 @@ public abstract class Nounours {
                 try {
                     int i = 0;
                     boolean needsDownload = false;
-                    boolean downloadFailed = false;
                     debug("Loading images");
                     for (Image image : curTheme.getImages().values()) {
                         i++;
@@ -437,7 +434,7 @@ public abstract class Nounours {
                         else
                             updatePreloadProgress(i, size);
                     }
-                    if (forceDownload && !downloadFailed)
+                    if (forceDownload)
                         setIsThemeUpToDate(curTheme);
                 } catch (Exception e) {
                     debug("Could not use image set " + curTheme + ":  " + e);
@@ -481,9 +478,8 @@ public abstract class Nounours {
         // Do nothing
     }
 
-    protected void themeLoadError(String message)
-
-    {
+    @SuppressWarnings("UnusedParameters")
+    protected void themeLoadError(String message) {
         // Do nothing
     }
 

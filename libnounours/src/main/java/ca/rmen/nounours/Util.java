@@ -21,7 +21,6 @@ package ca.rmen.nounours;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Properties;
@@ -206,8 +205,7 @@ public class Util {
             System.out.println("Feature " + featureId + " is not in image " + image);
             return Integer.MAX_VALUE;
         }
-        int distance = getDistance(featureImage.getX(), featureImage.getY(), x, y);
-        return distance;
+        return getDistance(featureImage.getX(), featureImage.getY(), x, y);
     }
 
     /**
@@ -302,6 +300,7 @@ public class Util {
         } catch (Exception e) {
             System.out.println("Error downloading " + remoteFileLocation + " to " + localFileLocation + ": " + e + ". "
                     + retries + " retries left");
+            //noinspection SimplifiableIfStatement
             if (retries > 0)
                 return downloadFile(remoteFileLocation, localFileLocation, retries - 1);
             return false;
