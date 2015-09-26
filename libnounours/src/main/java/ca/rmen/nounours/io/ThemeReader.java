@@ -29,7 +29,7 @@ import java.util.Map;
 import ca.rmen.nounours.data.Theme;
 
 /**
- * Reads a CSV file of image data. The required columns are: <code>
+ * Reads a CSV file of image data.
  *
  * @author Carmen Alvarez
  *

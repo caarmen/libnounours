@@ -126,8 +126,6 @@ public abstract class Nounours {
      * Display an animation. This method stops any currently running animation.
      * This method invokes the doVibrate and playSound methods implemented by
      * the subclass, before displaying the image animation.
-     * 
-     * @param animationId
      */
     public void doAnimation(Animation animation, boolean isDynamicAnimation) {
         if (isLoading)
@@ -229,7 +227,6 @@ public abstract class Nounours {
      * @param animationFile
      * @param flingAnimationFile
      * @param soundFile
-     * @param defaultImageId
      *            The default image is the first image displayed. The display
      *            should also be reset to the default image at the end of
      *            animations.

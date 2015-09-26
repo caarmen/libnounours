@@ -55,8 +55,6 @@ abstract public class NounoursReader {
     /**
      * Called when the CSVReader has read one line in the CSV file. Extending
      * classes can access the values read from the line.
-     *
-     * @param reader
      */
     protected abstract void readLine(CSVReader csvReader);
 }

@@ -30,8 +30,8 @@ public interface NounoursAnimationHandler {
 
     /**
      * The implementing class may implement this to add the menu item for the
-     * animation, as it is read from the CSV file. If this must be handled
-     * later, the method {#link {@link #getAnimations()} may be used instead.
+     * animation, as it is read from the CSV file.
+     * later, the method {#link {@link ca.rmen.nounours.data.Theme#getAnimations()} may be used instead.
      *
      * @param animation
      */
