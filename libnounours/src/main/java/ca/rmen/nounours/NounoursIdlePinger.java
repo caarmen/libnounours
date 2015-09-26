@@ -31,7 +31,7 @@ public class NounoursIdlePinger implements Runnable {
     private boolean doPing = true;
 
     /**
-     * @param nounours
+     * @param nounours The Nounours to ping periodically.
      */
     public NounoursIdlePinger(final Nounours nounours) {
         this.nounours = nounours;
@@ -44,8 +44,6 @@ public class NounoursIdlePinger implements Runnable {
 
     /**
      * Ping nounours periodically.
-     *
-     * @see java.lang.Runnable#run()
      */
     @Override
     public void run() {

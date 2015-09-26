@@ -33,8 +33,8 @@ abstract public class NounoursReader {
 
     /**
      *
-     * @param is
-     * @throws IOException
+     * @param is the stream of a file containing configuration for Nounours.
+     * @throws IOException if the file could not be read.
      */
     public NounoursReader(final InputStream is) throws IOException {
         reader = new CSVReader(is);
@@ -43,7 +43,7 @@ abstract public class NounoursReader {
     /**
      * Reads each line in the CSV file.
      *
-     * @throws IOException
+     * @throws IOException if the file could not be read.
      */
     public void load() throws IOException {
         while (reader.next()) {
@@ -55,6 +55,7 @@ abstract public class NounoursReader {
     /**
      * Called when the CSVReader has read one line in the CSV file. Extending
      * classes can access the values read from the line.
+     * @param csvReader contains the line to be read.
      */
     protected abstract void readLine(CSVReader csvReader);
 }

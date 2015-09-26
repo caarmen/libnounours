@@ -47,7 +47,7 @@ public class SoundReader extends NounoursReader {
      *
      * @param is
      *            the sound CSV content
-     * @throws IOException
+     * @throws IOException if the file could not be read.
      */
     public SoundReader(final InputStream is) throws IOException {
         super(is);
@@ -57,6 +57,8 @@ public class SoundReader extends NounoursReader {
     /**
      * Reads a line in the CSV file, creates a new Sound object, and adds it to
      * the cache.
+     *
+     * @param reader contains the line to be read.
      */
     @Override
     protected void readLine(final CSVReader reader) {

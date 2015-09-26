@@ -60,7 +60,7 @@ public class ImageFeatureReader extends NounoursReader {
      *            file must be in this list.
      * @param is
      *            the CSV stream
-     * @throws IOException
+     * @throws IOException if the file could not be read.
      */
     public ImageFeatureReader(Map<String, Image> imageMap, List<Feature> features, InputStream is) throws IOException {
         super(is);

@@ -60,8 +60,8 @@ public class FlingAnimationReader extends NounoursReader {
      * Immediately begins reading the CSV file and builds a cache of
      * FlingAnimation objects.
      *
-     * @param is
-     * @throws IOException
+     * @param is the stream of the fling animation file to read.
+     * @throws IOException if the file could not be read.
      */
     public FlingAnimationReader(final InputStream is) throws IOException {
         super(is);
@@ -71,6 +71,7 @@ public class FlingAnimationReader extends NounoursReader {
     /**
      * Reads a line in the CSV file, creates a new FlingAnimation objet, and
      * adds it to the cache.
+     * @param reader contains the line to be read.
      */
     @Override
     protected void readLine(final CSVReader reader) {

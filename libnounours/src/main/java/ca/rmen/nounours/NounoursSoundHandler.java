@@ -29,7 +29,7 @@ public interface NounoursSoundHandler {
     /**
      * Mute or unmute sound on the device.
      *
-     * @param enableSound
+     * @param enableSound if true, sounds will be played.  Sounds will be muted otherwise.
      */
     public void setEnableSound(boolean enableSound);
 
@@ -37,7 +37,7 @@ public interface NounoursSoundHandler {
      * Play a sound on the device. The sound should be played in a separate
      * thread.
      *
-     * @param soundId
+     * @param soundId the id of the sound to play.
      */
     public void playSound(String soundId);
 

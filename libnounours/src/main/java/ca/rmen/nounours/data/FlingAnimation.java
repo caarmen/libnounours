@@ -117,16 +117,13 @@ public class FlingAnimation {
     }
 
     /**
-     * The minimum velocity on the X-axis required to launch the animation.
-     *
-     * @return
+     * @return the minimum velocity on the X-axis required to launch the animation.
      */
     public float getMinVelX() {
         return minVelX;
     }
 
     /**
-     *
      * @return The minimum velocity on the Y-axis required to launch the
      *         animation.
      */
@@ -135,7 +132,6 @@ public class FlingAnimation {
     }
 
     /**
-     *
      * @return The id of the animation to display.
      */
     public String getAnimationId() {

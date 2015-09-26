@@ -58,8 +58,8 @@ public class AnimationReader extends NounoursReader {
     /**
      * Immediately reads the CSV file and builds a cache of Animation objects.
      *
-     * @param is
-     * @throws IOException
+     * @param is the stream of the CSV file to read.
+     * @throws IOException if the file could not be read.
      */
     public AnimationReader(final InputStream is) throws IOException {
         super(is);
@@ -68,6 +68,7 @@ public class AnimationReader extends NounoursReader {
 
     /**
      * Reads a line in the CSV file and adds it to a cache of animations.
+     * @param reader contains the line to be read.
      */
     @Override
     protected void readLine(final CSVReader reader) {

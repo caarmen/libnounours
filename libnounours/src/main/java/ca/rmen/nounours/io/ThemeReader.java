@@ -46,7 +46,7 @@ public class ThemeReader extends NounoursReader {
      *
      * @param is
      *            the image CSV content
-     * @throws IOException
+     * @throws IOException if the file could not be read.
      */
     public ThemeReader(final InputStream is) throws IOException {
         super(is);
@@ -56,6 +56,7 @@ public class ThemeReader extends NounoursReader {
     /**
      * Read a line in the CSV file, create an Image object, and add it to the
      * cache.
+     * @param reader contains the line to read
      */
     @Override
     protected void readLine(final CSVReader reader) {
@@ -73,7 +74,7 @@ public class ThemeReader extends NounoursReader {
     }
 
     /**
-     *
+     * @return a read-only view of the themes that were read.
      */
     public Map<String, Theme> getThemes() {
         return Collections.unmodifiableMap(themes);

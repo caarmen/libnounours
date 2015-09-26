@@ -102,13 +102,14 @@ public abstract class Nounours {
     
     /**
      * The subclass must display the current image to the device.
+     * @param image the image to display.
      */
     protected abstract void displayImage(Image image);
 
     /**
      * Subclasses should implement a way to run a task in the background.
      * 
-     * @param task
+     * @param task the task to run in the background.
      */
     protected abstract void runTask(Runnable task);
 
@@ -126,6 +127,8 @@ public abstract class Nounours {
      * Display an animation. This method stops any currently running animation.
      * This method invokes the doVibrate and playSound methods implemented by
      * the subclass, before displaying the image animation.
+     * @param animation the animation to play
+     * @param isDynamicAnimation if true, this animation was generated at runtime, and is not part of the preset list of animations.
      */
     public void doAnimation(Animation animation, boolean isDynamicAnimation) {
         if (isLoading)
@@ -170,9 +173,7 @@ public abstract class Nounours {
     }
 
     /**
-     * Return the current animation, if one is running. Otherwise return null.
-     * 
-     * @return
+     * @return the current animation, if one is running. Otherwise return null.
      */
     private Animation getCurrentAnimation() {
         if (!animationHandler.isAnimationRunning())
@@ -216,21 +217,27 @@ public abstract class Nounours {
      * Reads the CSV files containing the image, feature, and animation data.
      * Starts the idle counter which will launch {{@link #onIdle()} after
      * PROP_IDLE_TIME milliseconds of inactivity. Displays the default image.
-     * 
+     *
+     * @param pAnimationHandler responsible for displaying animations
+     * @param pSoundHandler responsible for playing sounds
+     * @param pVibrateHandler responsible for vibrating the device
+     * @param nounoursPropertiesFile properties file specific to the given theme.
      * @param propertiesFile
      *            the nounours.properties file containing application-wide
      *            properties.
-     * @param imageFile
-     * @param featureFile
-     * @param imageFeatureFile
-     * @param adjacentImageFile
-     * @param animationFile
-     * @param flingAnimationFile
-     * @param soundFile
+     * @param imageFile contains the list of images in the given theme.
+     * @param themeFile contains the list of themes.
+     * @param featureFile contains the list of features for the given theme.
+     * @param imageFeatureFile identifies the position of each feature in each image.
+     * @param adjacentImageFile identifies which features can move from one image to another.
+     * @param animationFile defines the image sequences which make the animations.
+     * @param flingAnimationFile defines which fling gestures trigger which animations.
+     * @param soundFile associates sounds to animations
+     * @param themeId the id of the initial theme to use.
      *            The default image is the first image displayed. The display
      *            should also be reset to the default image at the end of
      *            animations.
-     * @throws IOException
+     * @throws IOException if any of the given files could not be read.
      */
     public void init(NounoursAnimationHandler pAnimationHandler, NounoursSoundHandler pSoundHandler,
             NounoursVibrateHandler pVibrateHandler, InputStream nounoursPropertiesFile, InputStream propertiesFile,
@@ -318,7 +325,8 @@ public abstract class Nounours {
     /**
      * Use the given set of images
      * 
-     * @param id
+     * @param id the id of the theme to use.
+     * @return true if the theme was successfully loaded.
      */
     public boolean useTheme(String id) {
         debug("Use theme " + id);
@@ -460,10 +468,10 @@ public abstract class Nounours {
     }
 
     /**
-     * Show the user the download progress of images.F
+     * Show the user the download progress of images.
      * 
-     * @param progress
-     * @param max
+     * @param progress the number of items downloaded so far.
+     * @param max the total number of items to download
      */
     protected void updateDownloadProgress(int progress, int max) {
         // Do nothing
@@ -486,7 +494,7 @@ public abstract class Nounours {
     /**
      * Mute or unmute the sound.
      * 
-     * @param enableSound
+     * @param enableSound if true, sounds will be played, otherwise sounds will be muted.
      */
     public void setEnableSound(boolean enableSound) {
         this.enableSound = enableSound;
@@ -572,8 +580,8 @@ public abstract class Nounours {
     /**
      * The subclass should call this during a mouse click or touch event.
      * 
-     * @param x
-     * @param y
+     * @param x the x-position of the pointer
+     * @param y the y-position of the pointer
      */
     public void onPress(int x, int y) {
         if (curTheme == null)
@@ -624,8 +632,8 @@ public abstract class Nounours {
     /**
      * The subclass should call this when the mouse/finger moves.
      * 
-     * @param x
-     * @param y
+     * @param x the x-position of the pointer at the end of the move
+     * @param y the y-position of the pointer at the end of the move
      */
     public void onMove(int x, int y) {
         boolean doRefresh = true;
@@ -711,6 +719,10 @@ public abstract class Nounours {
 
     /**
      * The user did a fling action (dragged than released).
+     * @param x the x-position at the end of the fling action
+     * @param y the y-position at the end of the fling action
+     * @param velX the velocity on the x-axis at the end of the fling action
+     * @param velY the velocity on the y-axis at the end of the fling action
      */
     public void onFling(int x, int y, float velX, float velY) {
         if (curTheme == null)
@@ -764,9 +776,7 @@ public abstract class Nounours {
 
     // Begin idle activity related methods
     /**
-     * Enabling pinging the application for idleness.
-     * 
-     * @param doPing
+     * @param doPing if true, the pinger will periodically check the application for idleness.
      */
     public void doPing(boolean doPing) {
         pinger.setDoPing(doPing);
@@ -866,23 +876,22 @@ public abstract class Nounours {
         return curTheme.getImages();
     }
 
+    /**
+     * @return all the themes.
+     */
     public Map<String, Theme> getThemes() {
         return themes;
     }
 
     /**
-     * Get the current image which is displayed.
-     * 
-     * @return
+     * @return the image which is currently displayed.
      */
     protected Image getCurrentImage() {
         return curImage;
     }
 
     /**
-     * Get the default image
-     * 
-     * @return
+     * @return the default image of the current theme.
      */
     public Image getDefaultImage() {
         return curTheme.getDefaultImage();
@@ -891,7 +900,7 @@ public abstract class Nounours {
     /**
      * Display the given image.
      * 
-     * @param image
+     * @param image the image to display.
      */
     public void setImage(Image image) {
         boolean doRefresh = (curImage != image);

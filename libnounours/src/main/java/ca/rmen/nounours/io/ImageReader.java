@@ -50,7 +50,7 @@ public class ImageReader extends NounoursReader {
      *
      * @param is
      *            the image CSV content
-     * @throws IOException
+     * @throws IOException if the file could not be read.
      */
     public ImageReader(final InputStream is) throws IOException {
         super(is);
@@ -60,6 +60,7 @@ public class ImageReader extends NounoursReader {
     /**
      * Read a line in the CSV file, create an Image object, and add it to the
      * cache.
+     * @param reader contains the line to be read.
      */
     @Override
     protected void readLine(final CSVReader reader) {

@@ -52,7 +52,7 @@ public class AdjacentImageReader extends NounoursReader {
      *            updated by this class.
      * @param is
      *            the CSV file stream.
-     * @throws IOException
+     * @throws IOException if the file could not be read.
      */
     public AdjacentImageReader(Map<String, Image> imageMap, InputStream is) throws IOException {
         super(is);
@@ -63,6 +63,7 @@ public class AdjacentImageReader extends NounoursReader {
 
     /**
      * Updates given images with transitions into adjacent images.
+     * @param reader contains the line to be read.
      *
      * @see ca.rmen.nounours.io.NounoursReader#readLine(ca.rmen.nounours.io.CSVReader)
      */

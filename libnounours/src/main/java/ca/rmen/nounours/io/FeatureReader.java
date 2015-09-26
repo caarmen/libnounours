@@ -46,8 +46,8 @@ public class FeatureReader extends NounoursReader {
      * Immediately begins reading the CSV file and building a cache of Feature
      * objects.
      *
-     * @param is
-     * @throws IOException
+     * @param is the stream of the feature csv file to read.
+     * @throws IOException if the file could not be read.
      */
     public FeatureReader(final InputStream is) throws IOException {
         super(is);
@@ -56,6 +56,7 @@ public class FeatureReader extends NounoursReader {
 
     /**
      * Reads a line, creates a new Feature, and adds it to a cache.
+     * @param reader contains the line to be read.
      */
     @Override
     protected void readLine(final CSVReader reader) {

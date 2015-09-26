@@ -45,8 +45,8 @@ public class CSVReader {
     /**
      * Open the stream for reading. Reads the header line.
      *
-     * @param is
-     * @throws IOException
+     * @param is the stream of the CSV file.
+     * @throws IOException if the file could not be read.
      */
     public CSVReader(InputStream is) throws IOException {
         reader = new BufferedReader(new InputStreamReader(is));
@@ -58,7 +58,7 @@ public class CSVReader {
     /**
      * Closes the stream.
      *
-     * @throws IOException
+     * @throws IOException if the file could not be closed.
      */
     public void close() throws IOException {
         reader.close();
@@ -68,7 +68,7 @@ public class CSVReader {
      * Read the next line in the file.
      *
      * @return true if a line was read, false if EOF was reached.
-     * @throws IOException
+     * @throws IOException if the file could not be read.
      */
     public boolean next() throws IOException {
         currentLineNumber++;
@@ -80,7 +80,6 @@ public class CSVReader {
     }
 
     /**
-     *
      * @return the list of cells in the current line.
      */
     public String[] curentLine() {
@@ -88,7 +87,6 @@ public class CSVReader {
     }
 
     /**
-     *
      * @return the list of cells in the first line. Normally this is the column
      *         headings.
      */
@@ -97,7 +95,6 @@ public class CSVReader {
     }
 
     /**
-     *
      * @return the current line number we are reading. The header is line 0.
      */
     public int getLineNumber() {
@@ -108,7 +105,7 @@ public class CSVReader {
      * For the current line, return the value of the cell corresponding to the
      * given column name.
      *
-     * @param fieldName
+     * @param fieldName the name of the field (the column name in the CSV file).
      * @return the value of the cell in the current line corresponding to the
      *         given column name. If we haven't read any line yet, null is
      *         returned.

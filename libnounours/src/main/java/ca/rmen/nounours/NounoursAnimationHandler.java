@@ -33,7 +33,7 @@ public interface NounoursAnimationHandler {
      * animation, as it is read from the CSV file.
      * later, the method {#link {@link ca.rmen.nounours.data.Theme#getAnimations()} may be used instead.
      *
-     * @param animation
+     * @param animation the animation to add to the UI.
      */
     public void addAnimation(Animation animation);
 
@@ -52,7 +52,8 @@ public interface NounoursAnimationHandler {
      * Implementing classes should implement the logic to show the animation on
      * the device.
      *
-     * @param animation
+     * @param animation the animation to execute.
+     * @param isDynamicAnimation if true, this animation has been generated at runtime, and is not part of the preset list of animations.
      */
     public void doAnimation(Animation animation, boolean isDynamicAnimation);
 }

@@ -59,7 +59,7 @@ public class Util {
      * Returns a long property specified in the given properties, or the
      * defaultValue if it is not specified in the properties.
      * 
-     * @param properties
+     * @param properties a set of key-value properties
      * @param key
      *            the name of the property to retrieve
      * @param defaultValue
@@ -84,7 +84,7 @@ public class Util {
      * Returns a float property specified in the given properties, or the
      * defaultValue if it is not specified in the properties.
      * 
-     * @param properties
+     * @param properties a set of key-value properties
      * @param key
      *            the name of the property to retrieve
      * @param defaultValue
@@ -106,12 +106,10 @@ public class Util {
     }
 
     /**
-     * Find the feature in the given image which is closest to the given point.
-     * 
-     * @param image
-     * @param x
-     * @param y
-     * @return
+     * @param image the image which should contain at least one feature.
+     * @param x the x-position of a point
+     * @param y the y-position of a point.
+     * @return the feature in the given image which is closest to the given point, or null if the image has no features.
      */
     public static Feature getClosestFeature(Image image, int x, int y) {
         Feature result = null;
@@ -126,6 +124,19 @@ public class Util {
         return result;
     }
 
+    /**
+     * Given an image displayed scaled, centered, and filled in on one axis on a device, so that the image
+     * is completely visible, and given a point on the
+     * device coordinates, return the coordinates of the point relative to the image.
+     *
+     * @param deviceX the x-position of the point in the device coordinates
+     * @param deviceY the y-position of the point in the device coordinates
+     * @param deviceWidth the width of the device
+     * @param deviceHeight the height of the device
+     * @param imageWidth the width of the image
+     * @param imageHeight the height of the image
+     * @return the position of the point relative to the image.
+     */
     public static int[] translate(int deviceX, int deviceY, int deviceWidth, int deviceHeight, int imageWidth,
             int imageHeight) {
         float heightRatio = (float) deviceHeight / imageHeight;
@@ -160,7 +171,7 @@ public class Util {
      *            the new x-location for the given feature
      * @param y
      *            the new y-location for the given feature.
-     * @return
+     * @return the image adjacent to the given image, in which the given feature is closest to the given point.
      */
     public static Image getAdjacentImage(Image image, String featureId, int x, int y) {
         Image result = image;
@@ -179,7 +190,7 @@ public class Util {
      * Get the distance in pixels between the given point and the location of
      * the given feature in the given image.
      * 
-     * @param image
+     * @param image the image containing the feature
      * @param featureId
      *            a feature in the given image, which is located somewhere other
      *            than (x,y).
@@ -187,7 +198,7 @@ public class Util {
      *            the x-location of the mouse/touch
      * @param y
      *            the y-location of the mouse/touch
-     * @return
+     * @return the distance between the point and the feature.
      */
     public static int getDistance(Image image, String featureId, int x, int y) {
         ImageFeature featureImage = image.getImageFeature(featureId);
@@ -202,11 +213,11 @@ public class Util {
     /**
      * Get the distance between two points.
      * 
-     * @param x1
-     * @param y1
-     * @param x2
-     * @param y2
-     * @return
+     * @param x1 the x coordinate of the first point
+     * @param y1 the y coordinate of the first point
+     * @param x2 the x coordinate of the second point
+     * @param y2 the y coordinate of the second point
+     * @return the distance between the two points.
      */
     public static int getDistance(int x1, int y1, int x2, int y2) {
         return (int) Math.sqrt(Math.pow(x1 - x2, 2.0) + Math.pow(y2 - y1, 2.0));
@@ -214,12 +225,12 @@ public class Util {
 
     /**
      * 
-     * @param pointX
-     * @param pointY
-     * @param squareX
-     * @param squareY
-     * @param squareWidth
-     * @param squareHeight
+     * @param pointX the y coordinate of the point
+     * @param pointY the x coordinate of the point
+     * @param squareX the x coordinate of the upper-left position of the square
+     * @param squareY the y coordinate of the upper-left position of the square
+     * @param squareWidth the width of the square
+     * @param squareHeight the height of the square
      * @return true if the point is within the square.
      */
     public static boolean pointIsInSquare(int pointX, int pointY, int squareX, int squareY, int squareWidth,
@@ -231,9 +242,9 @@ public class Util {
     }
 
     /**
-     * 
-     * @param v1
-     * @param v2
+     *
+     * @param v1 the first velocity
+     * @param v2 the second velocity
      * @return true if the velocity v1 is faster than the velocity v2, and in
      *         the same direction.
      */
@@ -246,28 +257,25 @@ public class Util {
     }
 
     /**
-     * Downloads the given remote image to the given local location.
-     * 
-     * @param remoteFileLocation
-     * @param localFileLocation
-     * @throws IllegalStateException
-     * @throws IOException
+     * Downloads the given remote image to the given local location. Attempts up to 3 times to download the file, in case of error.
+     *
+     * @param remoteFileLocation the URI of the file to download
+     * @param localFileLocation the path to where the local file will be saved.
+     * @return true if the file was successfully downloaded, false otherwise.
      */
-    public static boolean downloadFile(URI remoteFileLocation, File localFileLocation) throws IllegalStateException,
-            IOException {
+    public static boolean downloadFile(URI remoteFileLocation, File localFileLocation) {
         return downloadFile(remoteFileLocation, localFileLocation, 3);
     }
 
     /**
      * Downloads the given remote image to the given local location.
      * 
-     * @param remoteFileLocation
-     * @param localFileLocation
-     * @throws IllegalStateException
-     * @throws IOException
+     * @param remoteFileLocation the URI of the file to download
+     * @param localFileLocation the path to where the local file will be saved.
+     * @param retries number of times to retry the download in case of error.
+     * @return true if the file was successfully downloaded, false otherwise.
      */
-    public static boolean downloadFile(URI remoteFileLocation, File localFileLocation, int retries)
-            throws IllegalStateException, IOException {
+    public static boolean downloadFile(URI remoteFileLocation, File localFileLocation, int retries) {
 
         try {
             HttpClient httpClient = getHttpClient();

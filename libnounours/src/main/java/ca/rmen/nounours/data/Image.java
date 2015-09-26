@@ -82,7 +82,6 @@ public class Image {
     }
 
     /**
-     * 
      * @return the list of features in this image.
      */
     public Set<Feature> getFeatures() {
@@ -91,7 +90,7 @@ public class Image {
 
     /**
      * 
-     * @param featureId
+     * @param featureId the id of the feature.
      * @return the information about the given feature in the context of this
      *         image.
      */
@@ -131,11 +130,10 @@ public class Image {
     }
 
     /**
-     * Get the list of possible images to which we may transition, if the given
+     * @return the list of possible images to which we may transition, if the given
      * feature moves.
      * 
-     * @param featureId
-     * @return
+     * @param featureId the id of the feature which is contained inside this image and other adjacent images.
      */
     public Set<Image> getAdjacentImages(final String featureId) {
         Set<Image> result = adjacentImages.get(featureId);
