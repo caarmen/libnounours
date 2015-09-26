@@ -27,3 +27,8 @@ repositories {
 dependencies {
     compile 'org.apache.httpcomponents:httpclient:4.4'
 }
+
+compileJava {
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+}
