@@ -91,6 +91,7 @@ public abstract class Nounours {
     private NounoursSoundHandler soundHandler = null;
     private NounoursAnimationHandler animationHandler = null;
     private NounoursVibrateHandler vibrateHandler = null;
+    private NounoursRecorder nounoursRecorder = new NounoursRecorder();
 
     private Properties nounoursProperties;
 
@@ -202,6 +203,11 @@ public abstract class Nounours {
         }
         return result;
     }
+
+    public NounoursRecorder getNounoursRecorder() {
+        return nounoursRecorder;
+    }
+
 
     private Image getRandomImage(Image fromImage) {
         List<Image> allAdjacentImages = fromImage.getAllAdjacentImages();
@@ -662,8 +668,12 @@ public abstract class Nounours {
             }
         }
         // If the image has changed, refresh the screen.
-        if (doRefresh)
+        if (doRefresh) {
             displayImage(curImage);
+            if (nounoursRecorder.isRecording()) {
+                nounoursRecorder.addImage(curImage.getId());
+            }
+        }
     }
 
     /**
@@ -901,8 +911,12 @@ public abstract class Nounours {
     public void setImage(Image image) {
         boolean doRefresh = (curImage != image);
         curImage = image;
-        if (doRefresh)
+        if (doRefresh) {
             displayImage(curImage);
+            if(nounoursRecorder.isRecording()) {
+                nounoursRecorder.addImage(image.getId());
+            }
+        }
 
     }
 
@@ -927,6 +941,9 @@ public abstract class Nounours {
         if (curTheme.getHelpImage() != null) {
             stopAnimation();
             displayImage(curTheme.getHelpImage());
+            if(nounoursRecorder.isRecording()) {
+                nounoursRecorder.addImage(curTheme.getHelpImage().getId());
+            }
         }
     }
 
