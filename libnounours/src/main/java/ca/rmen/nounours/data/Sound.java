@@ -18,13 +18,15 @@
  */
 package ca.rmen.nounours.data;
 
+import java.io.Serializable;
+
 /**
  * Contains information about a sound. For now, only the filename is stored.
  * 
  * @author Carmen Alvarez
  * 
  */
-public class Sound {
+public class Sound implements Serializable {
 
     private final String id;
     private String filename;

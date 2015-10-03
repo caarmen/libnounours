@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ca.rmen.nounours.data.Animation;
+import ca.rmen.nounours.data.Image;
 
 /**
  * Reads in the CSV file listing the possible animations. The required columns
@@ -55,14 +56,18 @@ public class AnimationReader extends NounoursReader {
     private static final String COL_VIBRATE = "Vibrate";
     private static final String COL_SOUND = "Sound";
 
+    private final Map<String, Image> images;
+
     /**
      * Immediately reads the CSV file and builds a cache of Animation objects.
      *
+     * @param images map of image id to Image, read by the {@link ca.rmen.nounours.io.ImageReader}
      * @param is the stream of the CSV file to read.
      * @throws IOException if the file could not be read.
      */
-    public AnimationReader(final InputStream is) throws IOException {
+    public AnimationReader(Map<String, Image> images, final InputStream is) throws IOException {
         super(is);
+        this.images = images;
         load();
     }
 
@@ -80,14 +85,14 @@ public class AnimationReader extends NounoursReader {
         final boolean vibrate = Boolean.parseBoolean(reader.getValue(COL_VIBRATE));
         final String soundId = reader.getValue(COL_SOUND);
         final String sequence = reader.getValue(COL_SEQUENCE);
-        final String[] images = sequence.split(";");
+        final String[] imageIds = sequence.split(";");
         final Animation animation = new Animation(id, label, interval, repeat, visible, vibrate, soundId);
         float duration = 1.0f;
-        for (final String image : images) {
-            if (image.startsWith("d=")) {
-                duration = Float.parseFloat(image.substring(2));
+        for (final String imageId : imageIds) {
+            if (imageId.startsWith("d=")) {
+                duration = Float.parseFloat(imageId.substring(2));
             } else
-                animation.addImage(image, duration);
+                animation.addImage(images.get(imageId), duration);
         }
         animations.put(id, animation);
 

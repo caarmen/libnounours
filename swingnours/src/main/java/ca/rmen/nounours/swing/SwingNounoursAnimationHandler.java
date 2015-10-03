@@ -81,7 +81,7 @@ public class SwingNounoursAnimationHandler implements NounoursAnimationHandler, 
                 // Iterate through each of the images and display them.
                 for (int i = 0; i < animation.getRepeat() && !interrupted; i++) {
                     for (AnimationImage image : animation.getImages()) {
-                        nounours.setImage(nounours.getImages().get(image.getImageId()));
+                        nounours.setImage(image.getImage());
                         try {
                             Thread.sleep((long) (animation.getInterval() * image.getDuration()));
                         } catch (InterruptedException e) {

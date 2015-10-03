@@ -18,6 +18,7 @@
  */
 package ca.rmen.nounours.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.List;
  * @author Carmen Alvarez
  *
  */
-public class Animation {
+public class Animation implements Serializable {
     private final List<AnimationImage> images = new ArrayList<AnimationImage>();
     private String id = null;
     private String label = null;
@@ -91,9 +92,9 @@ public class Animation {
         this.interval = interval;
     }
 
-    public void addImage(final String imageId, float duration) {
-        AnimationImage image = new AnimationImage(imageId, duration);
-        images.add(image);
+    public void addImage(final Image image, float duration) {
+        AnimationImage animationImage = new AnimationImage(image, duration);
+        images.add(animationImage);
     }
 
     public boolean isVisible() {
@@ -135,7 +136,7 @@ public class Animation {
     public Object clone() throws CloneNotSupportedException {
         final Animation dup = new Animation(id, label, interval, repeat, visible, vibrate, soundId);
         for (final AnimationImage image : images) {
-            dup.addImage(image.getImageId(), image.getDuration());
+            dup.addImage(image.getImage(), image.getDuration());
         }
         return dup;
     }

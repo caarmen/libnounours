@@ -192,7 +192,7 @@ public class Theme {
         new AdjacentImageReader(images, adjacentImageFile);
 
         // Load the list of animations
-        AnimationReader animationReader = new AnimationReader(animationFile);
+        AnimationReader animationReader = new AnimationReader(images, animationFile);
         animations = animationReader.getAnimations();
 
         // Identify the "special" animations

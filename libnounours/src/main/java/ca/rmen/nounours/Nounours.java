@@ -198,7 +198,7 @@ public abstract class Nounours {
             if (curAnimationImage == null)
                 continue;
             float duration = 0.5f + random.nextFloat() * 2.0f;
-            result.addImage(curAnimationImage.getId(), duration);
+            result.addImage(curAnimationImage, duration);
             curAnimationImage = getRandomImage(curAnimationImage);
         }
         return result;
@@ -671,7 +671,7 @@ public abstract class Nounours {
         if (doRefresh) {
             displayImage(curImage);
             if (nounoursRecorder.isRecording()) {
-                nounoursRecorder.addImage(curImage.getId());
+                nounoursRecorder.addImage(curImage);
             }
         }
     }
@@ -914,7 +914,7 @@ public abstract class Nounours {
         if (doRefresh) {
             displayImage(curImage);
             if(nounoursRecorder.isRecording()) {
-                nounoursRecorder.addImage(image.getId());
+                nounoursRecorder.addImage(image);
             }
         }
 
@@ -942,7 +942,7 @@ public abstract class Nounours {
             stopAnimation();
             displayImage(curTheme.getHelpImage());
             if(nounoursRecorder.isRecording()) {
-                nounoursRecorder.addImage(curTheme.getHelpImage().getId());
+                nounoursRecorder.addImage(curTheme.getHelpImage());
             }
         }
     }

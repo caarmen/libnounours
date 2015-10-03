@@ -39,7 +39,7 @@ public class NounoursRecorder {
     private long lastFrameTimestamp;
     private long lastPauseTimestamp;
     private long lastResumeTimestamp;
-    private String lastImageId;
+    private Image lastImage;
     private Animation animation;
 
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -48,7 +48,7 @@ public class NounoursRecorder {
         lastFrameTimestamp = 0;
         lastPauseTimestamp = 0;
         lastResumeTimestamp = 0;
-        lastImageId = null;
+        lastImage = null;
         animation = null;
     }
 
@@ -83,11 +83,11 @@ public class NounoursRecorder {
         lastResumeTimestamp = System.currentTimeMillis();
     }
 
-    public void addImage(String imageId) {
+    public void addImage(Image image) {
         if(!isRecording()) throw new IllegalStateException("Not recording");
         if(isPaused()) throw new IllegalStateException("Paused");
         addLastImage();
-        lastImageId = imageId;
+        lastImage = image;
     }
 
     public Animation stop() {
@@ -108,9 +108,9 @@ public class NounoursRecorder {
             lastResumeTimestamp = 0;
         }
 
-        if(lastImageId != null) {
+        if(lastImage != null) {
             float lastRelativeFrameDuration = (float) lastFrameDuration / 1000;
-            animation.addImage(lastImageId, lastRelativeFrameDuration);
+            animation.addImage(lastImage, lastRelativeFrameDuration);
         }
 
         lastFrameTimestamp = now;

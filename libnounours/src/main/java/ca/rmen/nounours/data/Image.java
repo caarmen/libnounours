@@ -18,6 +18,7 @@
  */
 package ca.rmen.nounours.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ import java.util.Set;
  * @author Carmen Alvarez
  * 
  */
-public class Image {
+public class Image implements Serializable {
     private final String id;
     private String filename;
     private final Map<String, ImageFeature> featureToPosition = new HashMap<String, ImageFeature>();

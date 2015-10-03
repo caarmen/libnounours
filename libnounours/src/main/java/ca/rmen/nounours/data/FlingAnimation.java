@@ -18,6 +18,8 @@
  */
 package ca.rmen.nounours.data;
 
+import java.io.Serializable;
+
 /**
  * Represents the criteria during a fling event to launch a given animation. If
  * the fling is within certain bounds, and has at least a certain minimum
@@ -26,7 +28,7 @@ package ca.rmen.nounours.data;
  * @author Carmen Alvarez
  *
  */
-public class FlingAnimation {
+public class FlingAnimation implements Serializable {
 
     private String id = null;
 
