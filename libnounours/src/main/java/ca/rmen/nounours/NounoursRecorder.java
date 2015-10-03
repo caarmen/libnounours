@@ -92,10 +92,12 @@ public class NounoursRecorder {
 
     public void addImages(Animation animationToAdd) {
         List<AnimationImage> frames = animationToAdd.getImages();
-        for (int i = 0; i < frames.size(); i++) {
-            AnimationImage frame = frames.get(i);
-            float frameDuration = animationToAdd.getInterval() * frame.getDuration();
-            animation.addImage(frame.getImage(), frameDuration/1000);
+        for (int i = 0; i < animationToAdd.getRepeat(); i++) {
+            for (int j = 0; j < frames.size(); j++) {
+                AnimationImage frame = frames.get(j);
+                float frameDuration = animationToAdd.getInterval() * frame.getDuration();
+                animation.addImage(frame.getImage(), frameDuration / 1000);
+            }
         }
         lastFrameTimestamp = lastFrameTimestamp + animation.getDuration();
         lastImage = frames.get(frames.size() - 1).getImage();
