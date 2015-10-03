@@ -23,25 +23,24 @@ package ca.rmen.nounours.data;
  * animation.
  *
  * @author Carmen Alvarez
- *
  */
 public class AnimationImage {
 
-    private String imageId = null;
+    private Image image = null;
     private float duration = -1;
 
-    public AnimationImage(String imageId, float duration) {
-        this.imageId = imageId;
+    public AnimationImage(Image image, float duration) {
+        this.image = image;
         this.duration = duration;
     }
 
     /**
-     * Get the imageId.
+     * Get the image
      *
-     * @return the imageId
+     * @return the image
      */
-    public String getImageId() {
-        return imageId;
+    public Image getImage() {
+        return image;
     }
 
     /**
@@ -54,7 +53,7 @@ public class AnimationImage {
     }
 
     public String toString() {
-        return imageId + "(" + duration + ")";
+        return image + "(" + duration + ")";
     }
 
 }

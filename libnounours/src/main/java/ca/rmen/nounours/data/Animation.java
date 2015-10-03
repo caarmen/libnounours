@@ -18,6 +18,10 @@
  */
 package ca.rmen.nounours.data;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,8 +33,8 @@ import java.util.List;
  * @author Carmen Alvarez
  *
  */
-public class Animation {
-    private final List<AnimationImage> images = new ArrayList<AnimationImage>();
+public class Animation implements Serializable {
+    private List<AnimationImage> images = new ArrayList<AnimationImage>();
     private String id = null;
     private String label = null;
     private int interval = -1;
@@ -91,9 +95,9 @@ public class Animation {
         this.interval = interval;
     }
 
-    public void addImage(final String imageId, float duration) {
-        AnimationImage image = new AnimationImage(imageId, duration);
-        images.add(image);
+    public void addImage(final Image image, float duration) {
+        AnimationImage animationImage = new AnimationImage(image, duration);
+        images.add(animationImage);
     }
 
     public boolean isVisible() {
@@ -135,8 +139,62 @@ public class Animation {
     public Object clone() throws CloneNotSupportedException {
         final Animation dup = new Animation(id, label, interval, repeat, visible, vibrate, soundId);
         for (final AnimationImage image : images) {
-            dup.addImage(image.getImageId(), image.getDuration());
+            dup.addImage(image.getImage(), image.getDuration());
         }
         return dup;
+    }
+
+    private void writeObject(ObjectOutputStream out)
+            throws IOException {
+        out.writeObject(id);
+        out.writeObject(label);
+        out.writeInt(interval);
+        out.writeInt(repeat);
+        out.writeBoolean(visible);
+        out.writeBoolean(vibrate);
+        out.writeObject(soundId);
+        out.writeInt(images.size());
+        for (AnimationImage animationImage : images) {
+            writeAnimationImage(out, animationImage);
+        }
+    }
+
+    private void readObject(ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
+        id = (String) in.readObject();
+        label = (String) in.readObject();
+        interval = in.readInt();
+        repeat = in.readInt();
+        visible = in.readBoolean();
+        vibrate = in.readBoolean();
+        soundId = (String) in.readObject();
+        int size = in.readInt();
+        images = new ArrayList<AnimationImage>();
+        for (int i=0; i < size; i++) {
+            AnimationImage animationImage = readAnimationImage(in);
+            images.add(animationImage);
+        }
+    }
+
+    private void writeAnimationImage(ObjectOutputStream out, AnimationImage animationImage) throws IOException {
+        writeImage(out, animationImage.getImage());
+        out.writeFloat(animationImage.getDuration());
+    }
+
+    private void writeImage(ObjectOutputStream out, Image image) throws IOException {
+        out.writeObject(image.getId());
+        out.writeObject(image.getFilename());
+    }
+
+    private AnimationImage readAnimationImage(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        Image image = readImage(in);
+        float duration = in.readFloat();
+        return new AnimationImage(image, duration);
+    }
+
+    private Image readImage(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        String id = (String) in.readObject();
+        String filename = (String) in.readObject();
+        return new Image(id, filename);
     }
 }
