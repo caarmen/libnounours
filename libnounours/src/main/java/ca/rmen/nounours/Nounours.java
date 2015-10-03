@@ -150,6 +150,7 @@ public abstract class Nounours {
         if (!isDynamicAnimation)
             resetIdle();
         // Launch the image animation.
+        if (nounoursRecorder.isRecording()) nounoursRecorder.addImages(animation);
         animationHandler.doAnimation(animation, isDynamicAnimation);
     }
 

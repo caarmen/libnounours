@@ -90,6 +90,17 @@ public class NounoursRecorder {
         lastImage = image;
     }
 
+    public void addImages(Animation animationToAdd) {
+        List<AnimationImage> frames = animationToAdd.getImages();
+        for (int i = 0; i < frames.size(); i++) {
+            AnimationImage frame = frames.get(i);
+            float frameDuration = animationToAdd.getInterval() * frame.getDuration();
+            animation.addImage(frame.getImage(), frameDuration/1000);
+        }
+        lastFrameTimestamp = lastFrameTimestamp + animation.getDuration();
+        lastImage = frames.get(frames.size() - 1).getImage();
+    }
+
     public Animation stop() {
         if(!isRecording()) throw new IllegalStateException("Not recording");
         addLastImage();
@@ -116,6 +127,4 @@ public class NounoursRecorder {
         lastFrameTimestamp = now;
 
     }
-
-
 }
