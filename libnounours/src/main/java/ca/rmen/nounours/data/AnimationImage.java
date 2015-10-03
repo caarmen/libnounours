@@ -18,16 +18,13 @@
  */
 package ca.rmen.nounours.data;
 
-import java.io.Serializable;
-
 /**
  * Stores the image id and relative frame length, of an image within an
  * animation.
  *
  * @author Carmen Alvarez
- *
  */
-public class AnimationImage implements Serializable {
+public class AnimationImage {
 
     private Image image = null;
     private float duration = -1;

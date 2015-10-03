@@ -911,12 +911,8 @@ public abstract class Nounours {
     public void setImage(Image image) {
         boolean doRefresh = (curImage != image);
         curImage = image;
-        if (doRefresh) {
+        if (doRefresh)
             displayImage(curImage);
-            if(nounoursRecorder.isRecording()) {
-                nounoursRecorder.addImage(image);
-            }
-        }
 
     }
 
@@ -941,9 +937,6 @@ public abstract class Nounours {
         if (curTheme.getHelpImage() != null) {
             stopAnimation();
             displayImage(curTheme.getHelpImage());
-            if(nounoursRecorder.isRecording()) {
-                nounoursRecorder.addImage(curTheme.getHelpImage());
-            }
         }
     }
 

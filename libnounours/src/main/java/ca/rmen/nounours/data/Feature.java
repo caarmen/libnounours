@@ -18,8 +18,6 @@
  */
 package ca.rmen.nounours.data;
 
-import java.io.Serializable;
-
 /**
  * This class represents a feature of the main object in an image. For example:
  * The left paw of Nounours.
@@ -27,7 +25,7 @@ import java.io.Serializable;
  * @author Carmen Alvarez
  *
  */
-public class Feature implements Serializable {
+public class Feature {
 
     private String id = null;
     private String name = null;

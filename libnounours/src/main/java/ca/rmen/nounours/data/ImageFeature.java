@@ -18,8 +18,6 @@
  */
 package ca.rmen.nounours.data;
 
-import java.io.Serializable;
-
 /**
  * This class contains information about a given feature in the context of a
  * given image. For now, only the position of the feature in the image is
@@ -28,7 +26,7 @@ import java.io.Serializable;
  * @author Carmen Alvarez
  *
  */
-public class ImageFeature implements Serializable {
+public class ImageFeature {
     private final String featureId;
     private final String imageId;
     private final int x;

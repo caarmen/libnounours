@@ -18,6 +18,9 @@
  */
 package ca.rmen.nounours.data;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +34,7 @@ import java.util.List;
  *
  */
 public class Animation implements Serializable {
-    private final List<AnimationImage> images = new ArrayList<AnimationImage>();
+    private List<AnimationImage> images = new ArrayList<AnimationImage>();
     private String id = null;
     private String label = null;
     private int interval = -1;
@@ -139,5 +142,59 @@ public class Animation implements Serializable {
             dup.addImage(image.getImage(), image.getDuration());
         }
         return dup;
+    }
+
+    private void writeObject(ObjectOutputStream out)
+            throws IOException {
+        out.writeObject(id);
+        out.writeObject(label);
+        out.writeInt(interval);
+        out.writeInt(repeat);
+        out.writeBoolean(visible);
+        out.writeBoolean(vibrate);
+        out.writeObject(soundId);
+        out.writeInt(images.size());
+        for (AnimationImage animationImage : images) {
+            writeAnimationImage(out, animationImage);
+        }
+    }
+
+    private void readObject(ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
+        id = (String) in.readObject();
+        label = (String) in.readObject();
+        interval = in.readInt();
+        repeat = in.readInt();
+        visible = in.readBoolean();
+        vibrate = in.readBoolean();
+        soundId = (String) in.readObject();
+        int size = in.readInt();
+        images = new ArrayList<AnimationImage>();
+        for (int i=0; i < size; i++) {
+            AnimationImage animationImage = readAnimationImage(in);
+            images.add(animationImage);
+        }
+    }
+
+    private void writeAnimationImage(ObjectOutputStream out, AnimationImage animationImage) throws IOException {
+        writeImage(out, animationImage.getImage());
+        out.writeFloat(animationImage.getDuration());
+    }
+
+    private void writeImage(ObjectOutputStream out, Image image) throws IOException {
+        out.writeObject(image.getId());
+        out.writeObject(image.getFilename());
+    }
+
+    private AnimationImage readAnimationImage(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        Image image = readImage(in);
+        float duration = in.readFloat();
+        return new AnimationImage(image, duration);
+    }
+
+    private Image readImage(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        String id = (String) in.readObject();
+        String filename = (String) in.readObject();
+        return new Image(id, filename);
     }
 }
