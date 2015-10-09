@@ -91,6 +91,7 @@ public class NounoursRecorder {
     }
 
     public void addImages(Animation animationToAdd) {
+        lastFrameTimestamp = System.currentTimeMillis();
         List<AnimationImage> frames = animationToAdd.getImages();
         for (int i = 0; i < animationToAdd.getRepeat(); i++) {
             for (int j = 0; j < frames.size(); j++) {
@@ -99,8 +100,8 @@ public class NounoursRecorder {
                 animation.addImage(frame.getImage(), frameDuration / 1000);
             }
         }
-        lastFrameTimestamp = lastFrameTimestamp + animation.getDuration();
-        lastImage = frames.get(frames.size() - 1).getImage();
+        lastFrameTimestamp = lastFrameTimestamp + animationToAdd.getDuration();
+        lastImage = null;
     }
 
     public Animation stop() {
