@@ -86,6 +86,9 @@ public class NounoursRecorder {
     public void addImage(Image image) {
         if(!isRecording()) throw new IllegalStateException("Not recording");
         if(isPaused()) throw new IllegalStateException("Paused");
+        // If this is the same as the last image we added, do nothing.
+        if (lastImage != null && image.getId().equals(lastImage.getId())) return;
+        
         addLastImage();
         lastImage = image;
     }
