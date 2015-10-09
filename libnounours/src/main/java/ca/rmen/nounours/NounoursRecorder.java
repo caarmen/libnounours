@@ -53,7 +53,7 @@ public class NounoursRecorder {
     }
 
     public void start() {
-        if(lastFrameTimestamp > 0) throw new IllegalStateException("Already recording");
+        if (lastFrameTimestamp > 0) throw new IllegalStateException("Already recording");
         long now = System.currentTimeMillis();
         lastFrameTimestamp = now;
         animation = new Animation(
@@ -72,23 +72,23 @@ public class NounoursRecorder {
     }
 
     public void pause() {
-        if(!isRecording()) throw new IllegalStateException("Not recording");
-        if(isPaused()) throw new IllegalStateException("Already paused");
+        if (!isRecording()) throw new IllegalStateException("Not recording");
+        if (isPaused()) throw new IllegalStateException("Already paused");
         lastPauseTimestamp = System.currentTimeMillis();
     }
 
     public void resume() {
-        if(!isRecording()) throw new IllegalStateException("Not recording");
-        if(!isPaused()) throw new IllegalStateException("Not paused");
+        if (!isRecording()) throw new IllegalStateException("Not recording");
+        if (!isPaused()) throw new IllegalStateException("Not paused");
         lastResumeTimestamp = System.currentTimeMillis();
     }
 
     public void addImage(Image image) {
-        if(!isRecording()) throw new IllegalStateException("Not recording");
-        if(isPaused()) throw new IllegalStateException("Paused");
+        if (!isRecording()) throw new IllegalStateException("Not recording");
+        if (isPaused()) throw new IllegalStateException("Paused");
         // If this is the same as the last image we added, do nothing.
         if (lastImage != null && image.getId().equals(lastImage.getId())) return;
-        
+       
         addLastImage();
         lastImage = image;
     }
@@ -108,24 +108,24 @@ public class NounoursRecorder {
     }
 
     public Animation stop() {
-        if(!isRecording()) throw new IllegalStateException("Not recording");
+        if (!isRecording()) throw new IllegalStateException("Not recording");
         addLastImage();
         Animation result = animation;
         init();
         return result;
     }
 
-    private void addLastImage(){
+    private void addLastImage() {
         long now = System.currentTimeMillis();
         long lastFrameDuration = now - lastFrameTimestamp;
-        if(lastResumeTimestamp > 0) {
+        if (lastResumeTimestamp > 0) {
             long lastPauseDuration = lastResumeTimestamp - lastPauseTimestamp;
             lastFrameDuration -= lastPauseDuration;
             lastPauseTimestamp = 0;
             lastResumeTimestamp = 0;
         }
 
-        if(lastImage != null) {
+        if (lastImage != null) {
             float lastRelativeFrameDuration = (float) lastFrameDuration / 1000;
             animation.addImage(lastImage, lastRelativeFrameDuration);
         }
