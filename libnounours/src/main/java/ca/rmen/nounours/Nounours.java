@@ -628,6 +628,9 @@ public abstract class Nounours {
                 setImage(nextImage);
                 if (enableVibrate)
                     vibrateHandler.doVibrate(dropVibrateDuration);
+                if (nounoursRecorder.isRecording()) {
+                    nounoursRecorder.addImage(curImage);
+                }
             }
         }
     }
