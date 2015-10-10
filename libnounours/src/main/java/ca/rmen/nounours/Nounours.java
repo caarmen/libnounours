@@ -639,6 +639,7 @@ public abstract class Nounours {
      * @param y the y-position of the pointer at the end of the move
      */
     public void onMove(int x, int y) {
+        resetIdle();
         boolean doRefresh = true;
         if (curTheme == null)
             return;
