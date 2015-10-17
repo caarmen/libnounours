@@ -69,7 +69,7 @@ public class FlingAnimationReader extends NounoursReader {
     }
 
     /**
-     * Reads a line in the CSV file, creates a new FlingAnimation objet, and
+     * Reads a line in the CSV file, creates a new FlingAnimation object, and
      * adds it to the cache.
      * @param reader contains the line to be read.
      */

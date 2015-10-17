@@ -96,8 +96,7 @@ public class NounoursRecorder {
         lastFrameTimestamp = System.currentTimeMillis();
         List<AnimationImage> frames = animationToAdd.getImages();
         for (int i = 0; i < animationToAdd.getRepeat(); i++) {
-            for (int j = 0; j < frames.size(); j++) {
-                AnimationImage frame = frames.get(j);
+            for (AnimationImage frame : frames) {
                 float frameDuration = animationToAdd.getInterval() * frame.getDuration();
                 animation.addImage(frame.getImage(), frameDuration / 1000);
             }

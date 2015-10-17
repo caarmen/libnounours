@@ -47,6 +47,7 @@ class NounoursIdlePinger implements Runnable {
      */
     @Override
     public void run() {
+        //noinspection InfiniteLoopStatement
         while (true) {
             if (doPing) {
                 nounours.ping();

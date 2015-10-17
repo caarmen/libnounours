@@ -80,10 +80,6 @@ public class Theme {
         return name;
     }
 
-    public URI getLocation() {
-        return location;
-    }
-
     public boolean isLoaded() {
         return isLoaded;
     }
@@ -108,7 +104,7 @@ public class Theme {
 
     }
 
-    public void init(InputStream propertiesFile, InputStream imageFile, InputStream featureFile,
+    private void init(InputStream propertiesFile, InputStream imageFile, InputStream featureFile,
             InputStream imageFeatureFile, InputStream adjacentImageFile, InputStream animationFile,
             InputStream flingAnimationFile, InputStream soundFile) throws IOException {
         // Read theme properties

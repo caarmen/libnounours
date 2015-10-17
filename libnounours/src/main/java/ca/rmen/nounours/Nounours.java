@@ -29,8 +29,8 @@ import java.util.*;
 /**
  * This class contains the logic for initializing the nounours (reading the CSV
  * data files), handling mouse/touch actions (click/press, move, release),
- * handling animations. Subclasses must implement the UI-specificities (i.e.:
- * registering as mouselisteners for swing, or handling touch events on
+ * handling animations. Subclasses must implement the UI-specific behavior (i.e.:
+ * registering as mouse listeners for swing, or handling touch events on
  * android).
  * 
  * @author Carmen Alvarez
@@ -273,17 +273,16 @@ public abstract class Nounours {
      * Use the given set of images
      * 
      * @param id the id of the theme to use.
-     * @return true if the theme was successfully loaded.
      */
     @SuppressWarnings("WeakerAccess")
-    public boolean useTheme(String id) {
+    public void useTheme(String id) {
         debug("Use theme " + id);
         isLoading = true;
         try {
             // Do nothing if this is the current theme.
             if (curTheme != null && id.equals(curTheme.getId()) && loaded) {
                 debug("Already using theme " + id);
-                return true;
+                return;
             }
             // Stop any currently running animation.
             stopAnimation();
@@ -298,7 +297,7 @@ public abstract class Nounours {
                 } catch (Exception e) {
                     debug("Could not load theme " + curTheme + ": " + e);
                     debug(e);
-                    return false;
+                    return;
                 }
             }
             // Identify the "special" animations
@@ -309,7 +308,7 @@ public abstract class Nounours {
             // Reload images.
             boolean cachedResources = cacheResources();
             if (!cachedResources)
-                return false;
+                return;
             Runnable resetImage = new Runnable() {
                 public void run() {
                     reset();
@@ -320,7 +319,6 @@ public abstract class Nounours {
             };
             runTask(resetImage);
             loaded = true;
-            return true;
         } finally {
             isLoading = false;
         }
@@ -331,7 +329,7 @@ public abstract class Nounours {
      ******************************************************************/
     // Begin sound-related methods
     /**
-     * Mute or unmute the sound.
+     * Mute or un-mute the sound.
      * 
      * @param enableSound if true, sounds will be played, otherwise sounds will be muted.
      */
@@ -382,7 +380,7 @@ public abstract class Nounours {
         debug("Random animation");
         int numAnimations = getAnimations().size();
         boolean createAnimation = random.nextBoolean();
-        Animation randomAnimation = null;
+        Animation randomAnimation;
         if (createAnimation)
             randomAnimation = createRandomAnimation();
         else {
