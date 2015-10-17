@@ -44,7 +44,6 @@ public abstract class Nounours {
     private static final String PROP_DROP_VIBRATE_DURATION = "drop.vibrate.duration";
     private static final String PROP_VIBRATE_INTERVAL = "vibrate.interval";
     private static final String PROP_IDLE_TIME = "idle.time";
-    private static final String PROP_DOWNLOADED_IMAGES_DIR = "downloaded.images.dir";
     private static final String PROP_FLING_FACTOR = "fling.factor";
     private static final String PROP_FLING_PRECISION = "fling.precision";
     private static final String PROP_MIN_SHAKE_SPEED = "shake.factor";
@@ -282,7 +281,6 @@ public abstract class Nounours {
         // read application properties
         nounoursProperties = new Properties();
         nounoursProperties.load(nounoursPropertiesFile);
-        File appDir = getAppDir();
         flingFactor = Float.parseFloat(getProperty(PROP_FLING_FACTOR));
         dropVibrateDuration = Util.getLongProperty(nounoursProperties, PROP_DROP_VIBRATE_DURATION, dropVibrateDuration);
         vibrateInterval = Util.getLongProperty(nounoursProperties, PROP_VIBRATE_INTERVAL, vibrateInterval);
@@ -291,9 +289,6 @@ public abstract class Nounours {
         flingPrecision = (int) Util.getLongProperty(nounoursProperties, PROP_FLING_PRECISION, flingPrecision);
 
         // try first to get remote themes.
-
-        if (appDir != null && !appDir.exists())
-            appDir.mkdirs();
         if (themes == null || themes.isEmpty()) {
             ThemeReader themeReader = new ThemeReader(themeFile);
             themes = themeReader.getThemes();
@@ -349,7 +344,7 @@ public abstract class Nounours {
                 animationHandler.addAnimation(animation);
             }
 
-            int size = curTheme.getImages().size() + curTheme.getSounds().size();
+            int size = curTheme.getImages().size();
 
             // Loading the default theme.
             if (id.equals(DEFAULT_THEME_ID)) {
@@ -359,69 +354,22 @@ public abstract class Nounours {
             // Loading a non-default theme.
             else {
                 debug("Loading theme");
-                // Access or create the local directory for this theme.
-                String localDirName = getAppDir().getAbsolutePath() + File.separator + curTheme.getId();
-                File localDir = new File(localDirName);
-                if (!localDir.exists())
-                    localDir.mkdirs();
                 URI themeLocation = curTheme.getLocation();
                 try {
                     int i = 0;
-                    boolean needsDownload = false;
                     debug("Loading images");
                     for (Image image : curTheme.getImages().values()) {
                         i++;
                         // Update the image data to point to the filenames of
-                        // this
-                        // set
+                        // this set
                         if (themeLocation.getScheme().startsWith("jar")) {
                             if (!image.getFilename().startsWith("jar"))
                                 image.setFilename(themeLocation + image.getFilename());
                         } else if (themeLocation.getScheme().equals("file")) {
                             if(!image.getFilename().startsWith("file"))
                                 image.setFilename(themeLocation + File.separator + image.getFilename());
-                        } else {
-                            String imageFileName = new File(image.getFilename()).getName();
-                            /*String remoteFileName = themeLocation + "/" + (useHd() ? "hd/" : "") + imageFileName;
-                            URI remoteImageLocation = new URI(remoteFileName);*/
-                            URI remoteImageLocation = new URI(themeLocation + "/" + imageFileName);                            
-                            File localImageLocation = new File(localDir, imageFileName);
-                            // Download the image if we don't have it.
-                            if (!localImageLocation.exists()) {
-                                if (!Util.downloadFile(remoteImageLocation, localImageLocation)) {
-                                    debug("Error downloading image " + image);
-                                    return false;
-                                }
-
-                                needsDownload = true;
-                            }
-                            image.setFilename(localImageLocation.getAbsolutePath());
                         }
-                        if (needsDownload)
-                            updateDownloadProgress(i, size);
-                        else
-                            updatePreloadProgress(i, size);
-                    }
-                    debug("Loading " + curTheme.getSounds().size() + " sounds");
-                    if (!themeLocation.getScheme().equals("file")) {
-                        for (Sound sound : curTheme.getSounds().values()) {
-                            i++;
-                            String soundFileName = new File(sound.getFilename()).getName();
-                            URI remoteSoundLocation = new URI(themeLocation + "/" + soundFileName);
-                            File localSoundLocation = new File(localDir, soundFileName);
-                            // Download the image if we don't have it.
-                            if (!localSoundLocation.exists()) {
-                                if (!Util.downloadFile(remoteSoundLocation, localSoundLocation))
-                                    return false;
-
-                                needsDownload = true;
-                            }
-                            debug("Loaded " + sound.getFilename());
-                            if (needsDownload)
-                                updateDownloadProgress(i, size);
-                            else
-                                updatePreloadProgress(i, size);
-                        }
+                        updatePreloadProgress(i, size);
                     }
                 } catch (Exception e) {
                     debug("Could not use image set " + curTheme + ":  " + e);
@@ -448,17 +396,6 @@ public abstract class Nounours {
         } finally {
             isLoading = false;
         }
-    }
-
-    /**
-     * Show the user the download progress of images.
-     * 
-     * @param progress the number of items downloaded so far.
-     * @param max the total number of items to download
-     */
-    @SuppressWarnings({"UnusedParameters", "EmptyMethod", "WeakerAccess"})
-    protected void updateDownloadProgress(int progress, int max) {
-        // Do nothing
     }
 
     @SuppressWarnings({"WeakerAccess", "UnusedParameters", "EmptyMethod"})
@@ -926,8 +863,4 @@ public abstract class Nounours {
             ((Throwable) o).printStackTrace();
     }
 
-    File getAppDir() {
-        String dir = nounoursProperties.getProperty(PROP_DOWNLOADED_IMAGES_DIR);
-        return new File(dir);
-    }
 }

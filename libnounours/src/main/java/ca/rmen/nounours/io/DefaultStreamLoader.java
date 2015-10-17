@@ -18,17 +18,12 @@
  */
 package ca.rmen.nounours.io;
 
-import ca.rmen.nounours.Util;
-
 import java.io.*;
 import java.net.URI;
 
 public class DefaultStreamLoader implements StreamLoader {
 
-    private final File downloadDir;
-
-    public DefaultStreamLoader(File downloadDir) {
-        this.downloadDir = downloadDir;
+    public DefaultStreamLoader() {
     }
 
     @Override
@@ -43,14 +38,8 @@ public class DefaultStreamLoader implements StreamLoader {
         else if (uri.getScheme().toLowerCase().equals("file")) {
             return new FileInputStream(new File(uri.getPath()));
         }
-        // A file on a remote server.
-        // If we don't have the file locally, download it.
-        String fileName = new File(uri.getPath()).getName();
-        File file = new File(downloadDir, fileName);
-        if (!file.exists()) Util.downloadFile(uri, file);
-        if (!file.exists()) throw new FileNotFoundException(file.getAbsolutePath());
-
-        // Return the local file.
-        return new FileInputStream(file);
+        else {
+            return null;
+        }
     }
 }

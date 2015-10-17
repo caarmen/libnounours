@@ -21,25 +21,7 @@ package ca.rmen.nounours;
 import ca.rmen.nounours.data.Feature;
 import ca.rmen.nounours.data.Image;
 import ca.rmen.nounours.data.ImageFeature;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URI;
 import java.util.Properties;
 
 /**
@@ -49,8 +31,6 @@ import java.util.Properties;
  * 
  */
 public class Util {
-
-    private static HttpClient threadSafehttpClient;
 
     /**
      * Returns a long property specified in the given properties, or the
@@ -252,78 +232,4 @@ public class Util {
             return true;
         return false;
     }
-
-    /**
-     * Downloads the given remote image to the given local location. Attempts up to 3 times to download the file, in case of error.
-     *
-     * @param remoteFileLocation the URI of the file to download
-     * @param localFileLocation the path to where the local file will be saved.
-     * @return true if the file was successfully downloaded, false otherwise.
-     */
-    public static boolean downloadFile(URI remoteFileLocation, File localFileLocation) {
-        return downloadFile(remoteFileLocation, localFileLocation, 3);
-    }
-
-    /**
-     * Downloads the given remote image to the given local location.
-     * 
-     * @param remoteFileLocation the URI of the file to download
-     * @param localFileLocation the path to where the local file will be saved.
-     * @param retries number of times to retry the download in case of error.
-     * @return true if the file was successfully downloaded, false otherwise.
-     */
-    private static boolean downloadFile(URI remoteFileLocation, File localFileLocation, int retries) {
-
-        try {
-            HttpClient httpClient = getHttpClient();
-            HttpGet httpGet = new HttpGet(remoteFileLocation);
-            HttpResponse httpResponse = httpClient.execute(httpGet);
-            int code = httpResponse.getStatusLine().getStatusCode();
-            if (code != HttpStatus.SC_OK) {
-                System.out.println("Error code " + code + " trying to download " + remoteFileLocation + " to "
-                        + localFileLocation);
-                return false;
-            }
-            HttpEntity httpEntity = httpResponse.getEntity();
-            InputStream inputStream = httpEntity.getContent();
-            File tempFile = new File(localFileLocation.getAbsolutePath() + ".tmp");
-            FileOutputStream outputStream = new FileOutputStream(tempFile);
-            final byte[] buffer = new byte[1500];
-            for (int read = inputStream.read(buffer); read != -1; read = inputStream.read(buffer)) {
-                outputStream.write(buffer, 0, read);
-                outputStream.flush();
-            }
-            outputStream.close();
-            tempFile.renameTo(localFileLocation);
-            return true;
-        } catch (Exception e) {
-            System.out.println("Error downloading " + remoteFileLocation + " to " + localFileLocation + ": " + e + ". "
-                    + retries + " retries left");
-            //noinspection SimplifiableIfStatement
-            if (retries > 0)
-                return downloadFile(remoteFileLocation, localFileLocation, retries - 1);
-            return false;
-        }
-
-    }
-
-    /**
-     * Copied from WorldTour
-     */
-    private static HttpClient getHttpClient() {
-        if (threadSafehttpClient == null) {
-            final SchemeRegistry schemeRegistry = new SchemeRegistry();
-            schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-
-            final HttpParams httpParams = new BasicHttpParams();
-            HttpConnectionParams.setConnectionTimeout(httpParams, 8000);
-            HttpConnectionParams.setSoTimeout(httpParams, 8000);
-
-            final ClientConnectionManager clientConnectionManager = new ThreadSafeClientConnManager(httpParams,
-                    schemeRegistry);
-            threadSafehttpClient = new DefaultHttpClient(clientConnectionManager, httpParams);
-        }
-        return threadSafehttpClient;
-    }
-
 }
