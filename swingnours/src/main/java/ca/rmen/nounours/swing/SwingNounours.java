@@ -114,7 +114,7 @@ public class SwingNounours extends Nounours implements ActionListener {
      * Load the image bitmaps into memory.
      */
     @Override
-    protected boolean cacheImages() {
+    protected boolean cacheResources() {
         // Cache images for efficient drawing
         Map<String, Image> images = getCurrentTheme().getImages();
         for (Image image : images.values())

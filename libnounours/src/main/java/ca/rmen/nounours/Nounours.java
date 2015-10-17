@@ -22,10 +22,8 @@ import ca.rmen.nounours.data.*;
 import ca.rmen.nounours.io.StreamLoader;
 import ca.rmen.nounours.io.ThemeReader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.*;
 
 /**
@@ -297,7 +295,7 @@ public abstract class Nounours {
 
     }
 
-    protected abstract boolean cacheImages();
+    protected abstract boolean cacheResources();
 
     /**
      * Use the given set of images
@@ -345,8 +343,8 @@ public abstract class Nounours {
             }
 
             // Reload images.
-            boolean cachedImages = cacheImages();
-            if (!cachedImages)
+            boolean cachedResources = cacheResources();
+            if (!cachedResources)
                 return false;
             Runnable resetImage = new Runnable() {
                 public void run() {
