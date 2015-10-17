@@ -46,8 +46,6 @@ public abstract class Nounours {
     private static final String PROP_FLING_PRECISION = "fling.precision";
     private static final String PROP_MIN_SHAKE_SPEED = "shake.factor";
 
-    public static final String DEFAULT_THEME_ID = "0";
-
     private Random random = null;
     private boolean isShaking = false;
     private Image curImage = null;
@@ -64,7 +62,6 @@ public abstract class Nounours {
     private long pingInterval = 5000;
     private long lastActionTimestamp = -1;
 
-    private Theme defaultTheme = null;
     private Map<String, Theme> themes = null;
 
     private boolean enableSound = true;
@@ -213,17 +210,7 @@ public abstract class Nounours {
      * @param pSoundHandler responsible for playing sounds
      * @param pVibrateHandler responsible for vibrating the device
      * @param nounoursPropertiesFile properties file specific to the given theme.
-     * @param propertiesFile
-     *            the nounours.properties file containing application-wide
-     *            properties.
-     * @param imageFile contains the list of images in the given theme.
      * @param themeFile contains the list of themes.
-     * @param featureFile contains the list of features for the given theme.
-     * @param imageFeatureFile identifies the position of each feature in each image.
-     * @param adjacentImageFile identifies which features can move from one image to another.
-     * @param animationFile defines the image sequences which make the animations.
-     * @param flingAnimationFile defines which fling gestures trigger which animations.
-     * @param soundFile associates sounds to animations
      * @param themeId the id of the initial theme to use.
      *            The default image is the first image displayed. The display
      *            should also be reset to the default image at the end of
@@ -231,23 +218,13 @@ public abstract class Nounours {
      * @throws IOException if any of the given files could not be read.
      */
     public void init(StreamLoader streamLoader, NounoursAnimationHandler pAnimationHandler, NounoursSoundHandler pSoundHandler,
-            NounoursVibrateHandler pVibrateHandler, InputStream nounoursPropertiesFile, InputStream propertiesFile,
-            InputStream imageFile, InputStream themeFile, InputStream featureFile, InputStream imageFeatureFile,
-            InputStream adjacentImageFile, InputStream animationFile, InputStream flingAnimationFile,
-            InputStream soundFile, String themeId) throws IOException {
+            NounoursVibrateHandler pVibrateHandler, InputStream nounoursPropertiesFile, InputStream themeFile,
+            String themeId) throws IOException {
         debug("init");
 
         this.streamLoader = streamLoader;
         random = new Random(System.currentTimeMillis());
         initHandlersAndThemes(pAnimationHandler, pSoundHandler, pVibrateHandler, nounoursPropertiesFile, themeFile);
-        defaultTheme = new Theme(DEFAULT_THEME_ID, "Default", null);
-        defaultTheme.init(propertiesFile, imageFile, featureFile, imageFeatureFile, adjacentImageFile, animationFile,
-                flingAnimationFile, soundFile);
-
-        if (themeId.equals(Nounours.DEFAULT_THEME_ID))
-            curTheme = defaultTheme;
-        else
-            curTheme = themes.get(themeId);
         useTheme(themeId);
         resetIdle();
         debug("postInit");
@@ -255,11 +232,6 @@ public abstract class Nounours {
         // Start the keep-alive
         pinger = new NounoursIdlePinger(this);
         new Thread(pinger).start();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public Theme getDefaultTheme() {
-        return defaultTheme;
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -316,24 +288,16 @@ public abstract class Nounours {
             // Stop any currently running animation.
             stopAnimation();
 
-            if (id.equals(DEFAULT_THEME_ID))
-                curTheme = defaultTheme;
-            else
-                curTheme = themes.get(id);
-            if (curTheme == null) {
-                debug("Trying to use missing theme " + id);
-                curTheme = defaultTheme;
-                id = Nounours.DEFAULT_THEME_ID;
-            }
-            if (!curTheme.isLoaded() && !id.equals(DEFAULT_THEME_ID)) {
+            curTheme = themes.get(id);
+            if (!curTheme.isLoaded()) {
 
                 try {
                     debug("init theme " + curTheme);
                     curTheme.init(streamLoader);
+                    curImage = curTheme.getDefaultImage();
                 } catch (Exception e) {
                     debug("Could not load theme " + curTheme + ": " + e);
                     debug(e);
-                    curTheme = defaultTheme;
                     return false;
                 }
             }

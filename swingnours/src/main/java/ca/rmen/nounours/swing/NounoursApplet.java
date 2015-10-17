@@ -59,8 +59,8 @@ public class NounoursApplet extends JApplet {
 
             // Read the data
             String dataFilesLocation = getParameter("dataFilesLocation");
-            InputStream propertiesFile = new URL(dataFilesLocation + "nounours.properties").openStream();
-            InputStream themePropertiesFile = new URL(dataFilesLocation + "nounours.default.theme.properties")
+            InputStream propertiesFile = new URL(dataFilesLocation + "nounours.common.properties").openStream();
+            InputStream themePropertiesFile = new URL(dataFilesLocation + "nounours.common.properties")
                     .openStream();
             InputStream featureFile = new URL(dataFilesLocation + "feature.csv").openStream();
             InputStream imageFile = new URL(dataFilesLocation + "image-applet.csv").openStream();
@@ -84,9 +84,8 @@ public class NounoursApplet extends JApplet {
 
             // Set up the image panel
             CachedImageComponent nounoursPanel = new CachedImageComponent();
-            nounours = new SwingNounours(nounoursPanel, animation, option, help, propertiesFile, themePropertiesFile,
-                    featureFile, imageFile, imageSetFile, imageFeatureFile, adjacentImageFile, animationFile,
-                    flingAnimationFile, soundFile, Nounours.DEFAULT_THEME_ID);
+            nounours = new SwingNounours(nounoursPanel, animation, option, help, propertiesFile,
+                    imageSetFile, "0");
             SwingNounoursMouseAdapter mouseAdapter = new SwingNounoursMouseAdapter(nounours);
             SwingNounoursComponentAdapter componentAdapter = new SwingNounoursComponentAdapter(nounours);
             nounoursPanel.addMouseListener(mouseAdapter);

@@ -71,22 +71,10 @@ public class SwingNounours extends Nounours implements ActionListener {
      * @param optionMenu
      * @param helpMenu
      * @param globalPropertiesFile
-     * @param defaultThemePropertiesFile
-     * @param featureFile
-     * @param imageFile
-     * @param imageFeatureFile
-     * @param adjacentImageFile
-     * @param animationFile
-     * @param flingAnimationFile
-     * @param soundFile
-     * @throws IOException
-     * @throws MidiUnavailableException
      */
     public SwingNounours(ICachedImageComponent component, JMenu animationMenu, JMenu optionMenu, JMenu helpMenu,
-            InputStream globalPropertiesFile, InputStream defaultThemePropertiesFile, InputStream featureFile,
-            InputStream imageFile, InputStream imageSetFile, InputStream imageFeatureFile,
-            InputStream adjacentImageFile, InputStream animationFile, InputStream flingAnimationFile,
-            InputStream soundFile, String themeId) throws IOException, MidiUnavailableException {
+            InputStream globalPropertiesFile, InputStream imageSetFile,
+            String themeId) throws IOException, MidiUnavailableException {
         this.animationHandler = new SwingNounoursAnimationHandler(this, animationMenu);
         this.soundHandler = new SwingNounoursSoundHandler(this);
         this.component = component;
@@ -105,9 +93,8 @@ public class SwingNounours extends Nounours implements ActionListener {
         }
 
         // Initialize
-        init(new DefaultStreamLoader(), animationHandler, soundHandler, vibrateHandler, globalPropertiesFile, defaultThemePropertiesFile,
-                imageFile, imageSetFile, featureFile, imageFeatureFile, adjacentImageFile, animationFile,
-                flingAnimationFile, soundFile, themeId);
+        init(new DefaultStreamLoader(), animationHandler, soundHandler, vibrateHandler, globalPropertiesFile,
+                imageSetFile,  themeId);
     }
 
     /**
@@ -231,20 +218,11 @@ public class SwingNounours extends Nounours implements ActionListener {
         JMenu helpMenu = new JMenu("Help");
         menuBar.add(helpMenu);
 
-        InputStream propertiesFile = new FileInputStream("nounours.properties");
-        InputStream themePropertiesFile = new FileInputStream("nounours.default.theme.properties");
-        InputStream featureFile = new FileInputStream("feature.csv");
-        InputStream imageFile = new FileInputStream("image.csv");
+        InputStream propertiesFile = new FileInputStream("nounours.common.properties");
         InputStream imageSetFile = new FileInputStream("imageset.csv");
-        InputStream imageFeatureFile = new FileInputStream("imagefeatureassoc.csv");
-        InputStream adjacentImageFile = new FileInputStream("adjacentimage.csv");
-        InputStream animationFile = new FileInputStream("animation.csv");
-        InputStream flingAnimationFile = new FileInputStream("flinganimation.csv");
-        InputStream soundFile = new FileInputStream("sound.csv");
 
         SwingNounours nounours = new SwingNounours(panel, animation, optionsMenu, helpMenu, propertiesFile,
-                themePropertiesFile, featureFile, imageFile, imageSetFile, imageFeatureFile, adjacentImageFile,
-                animationFile, flingAnimationFile, soundFile, Nounours.DEFAULT_THEME_ID);
+                imageSetFile, "0");
 
         JFrame frame = new JFrame("Test");
         frame.setJMenuBar(menuBar);

@@ -64,7 +64,10 @@ public class ThemeReader extends NounoursReader {
         final String name = reader.getValue(COL_NAME);
         URI uri;
         try {
-            uri = new URI(reader.getValue(COL_URL));
+            String folder = reader.getValue(COL_URL);
+            if (folder.equals(".")) folder = "file://" + System.getProperty("user.dir");
+            uri = new URI(folder);
+
             final Theme theme = new Theme(id, name, uri);
             themes.put(id, theme);
         } catch (URISyntaxException e) {
