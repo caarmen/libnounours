@@ -18,13 +18,13 @@
  */
 package ca.rmen.nounours.io;
 
+import ca.rmen.nounours.data.Image;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import ca.rmen.nounours.data.Image;
 
 /**
  * Reads a CSV file of image data. The required columns are: <code>
@@ -43,7 +43,7 @@ public class ImageReader extends NounoursReader {
 
     private static final String COL_ID = "Id";
     private static final String COL_FILENAME = "Filename";
-    private static final String COL_ONRELEASE = "OnRelease";
+    private static final String COL_ON_RELEASE = "OnRelease";
 
     /**
      * Immediately reads the CSV data and stores the images in a cache.
@@ -66,7 +66,7 @@ public class ImageReader extends NounoursReader {
     protected void readLine(final CSVReader reader) {
         final String id = reader.getValue(COL_ID);
         final String filename = reader.getValue(COL_FILENAME);
-        final String onReleaseImageId = reader.getValue(COL_ONRELEASE);
+        final String onReleaseImageId = reader.getValue(COL_ON_RELEASE);
         final Image image = new Image(id, filename);
         if (onReleaseImageId != null) {
             image.setOnReleaseImageId(onReleaseImageId);

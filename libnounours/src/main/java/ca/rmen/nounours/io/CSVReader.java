@@ -25,13 +25,14 @@ import java.io.InputStreamReader;
 
 /**
  * Simple CSV reader. Does not support commas inside cells, even if the cell is
- * surrounded by quotes. Does not unescape any characters: if quotes are
+ * surrounded by quotes. Does not un-escape any characters: if quotes are
  * included in a cell, they will be included in the value read. Assumes the
  * first line in the CSV file is a header (with column names).
  *
  * @author Carmen Alvarez
  *
  */
+@SuppressWarnings("WeakerAccess")
 public class CSVReader {
 
     private BufferedReader reader = null;
@@ -77,13 +78,6 @@ public class CSVReader {
             return false;
         currentLine = line.split(FIELD_SEPARATOR);
         return true;
-    }
-
-    /**
-     * @return the list of cells in the current line.
-     */
-    public String[] curentLine() {
-        return currentLine;
     }
 
     /**

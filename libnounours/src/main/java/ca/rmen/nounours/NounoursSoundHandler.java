@@ -27,7 +27,7 @@ package ca.rmen.nounours;
 public interface NounoursSoundHandler {
 
     /**
-     * Mute or unmute sound on the device.
+     * Mute or un-mute sound on the device.
      *
      * @param enableSound if true, sounds will be played.  Sounds will be muted otherwise.
      */

@@ -18,54 +18,37 @@
  */
 package ca.rmen.nounours;
 
-import java.io.File;
-import java.io.FileInputStream;
+import ca.rmen.nounours.data.*;
+import ca.rmen.nounours.io.StreamLoader;
+import ca.rmen.nounours.io.ThemeReader;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
-
-import ca.rmen.nounours.data.Animation;
-import ca.rmen.nounours.data.Feature;
-import ca.rmen.nounours.data.FlingAnimation;
-import ca.rmen.nounours.data.Image;
-import ca.rmen.nounours.data.Sound;
-import ca.rmen.nounours.data.Theme;
-import ca.rmen.nounours.io.ThemeReader;
+import java.util.*;
 
 /**
  * This class contains the logic for initializing the nounours (reading the CSV
  * data files), handling mouse/touch actions (click/press, move, release),
- * handling animations. Subclasses must implement the UI-specificities (i.e.:
- * registering as mouselisteners for swing, or handling touch events on
+ * handling animations. Subclasses must implement the UI-specific behavior (i.e.:
+ * registering as mouse listeners for swing, or handling touch events on
  * android).
  * 
  * @author Carmen Alvarez
  * 
  */
 public abstract class Nounours {
+    static final String PROP_IDLE_PING_INTERVAL = "idle.ping.interval";
 
-    public static final String PROP_DROP_VIBRATE_DURATION = "drop.vibrate.duration";
-    public static final String PROP_VIBRATE_INTERVAL = "vibrate.interval";
-    public static final String PROP_IDLE_TIME = "idle.time";
-    public static final String PROP_IDLE_PING_INTERVAL = "idle.ping.interval";
-    public static final String PROP_DOWNLOADED_IMAGES_DIR = "downloaded.images.dir";
-    public static final String PROP_FLING_FACTOR = "fling.factor";
-    public static final String PROP_FLING_PRECISION = "fling.precision";
-    public static final String PROP_MIN_SHAKE_SPEED = "shake.factor";
-    public static final String PROP_THEME_LIST = "theme.list";
-
-    public static final String DEFAULT_THEME_ID = "0";
+    private static final String PROP_DROP_VIBRATE_DURATION = "drop.vibrate.duration";
+    private static final String PROP_VIBRATE_INTERVAL = "vibrate.interval";
+    private static final String PROP_IDLE_TIME = "idle.time";
+    private static final String PROP_FLING_FACTOR = "fling.factor";
+    private static final String PROP_FLING_PRECISION = "fling.precision";
+    private static final String PROP_MIN_SHAKE_SPEED = "shake.factor";
 
     private Random random = null;
-    boolean isShaking = false;
-    Image curImage = null;
+    private boolean isShaking = false;
+    private Image curImage = null;
     private Theme curTheme = null;
     private boolean loaded = false;
     private boolean isLoading = true;
@@ -78,20 +61,18 @@ public abstract class Nounours {
     private long idleTimeout = 60000;
     private long pingInterval = 5000;
     private long lastActionTimestamp = -1;
-    private String downloadedImagesDir = null;
 
-    private Theme defaultTheme = null;
     private Map<String, Theme> themes = null;
 
     private boolean enableSound = true;
     private boolean enableVibrate = true;
-    private boolean enableRandomAnimations = true;
     private NounoursIdlePinger pinger = null;
 
     private NounoursSoundHandler soundHandler = null;
     private NounoursAnimationHandler animationHandler = null;
     private NounoursVibrateHandler vibrateHandler = null;
-    private NounoursRecorder nounoursRecorder = new NounoursRecorder();
+    private final NounoursRecorder nounoursRecorder = new NounoursRecorder();
+    private StreamLoader streamLoader;
 
     private Properties nounoursProperties;
 
@@ -114,10 +95,7 @@ public abstract class Nounours {
      */
     protected abstract void runTask(Runnable task);
 
-    protected abstract boolean isThemeUpToDate(Theme theme);
-
-    protected abstract void setIsThemeUpToDate(Theme theme);
-
+    @SuppressWarnings("WeakerAccess")
     public boolean isLoading() {
         return isLoading;
     }
@@ -131,6 +109,7 @@ public abstract class Nounours {
      * @param animation the animation to play
      * @param isDynamicAnimation if true, this animation was generated at runtime, and is not part of the preset list of animations.
      */
+    @SuppressWarnings("WeakerAccess")
     public void doAnimation(Animation animation, boolean isDynamicAnimation) {
         if (isLoading)
             return;
@@ -161,6 +140,7 @@ public abstract class Nounours {
     /**
      * Stop the current animation, if one is running.
      */
+    @SuppressWarnings("WeakerAccess")
     public void stopAnimation() {
         animationHandler.stopAnimation();
         soundHandler.stopSound();
@@ -170,6 +150,7 @@ public abstract class Nounours {
     /**
      * @return true if an animation is currently being displayed.
      */
+    @SuppressWarnings("WeakerAccess")
     public boolean isAnimationRunning() {
         return animationHandler.isAnimationRunning();
     }
@@ -185,7 +166,7 @@ public abstract class Nounours {
         return curAnimation;
     }
 
-    public Animation createRandomAnimation() {
+    Animation createRandomAnimation() {
         if (!loaded)
             return null;
         int interval = 100 + random.nextInt(400);
@@ -205,6 +186,7 @@ public abstract class Nounours {
         return result;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public NounoursRecorder getNounoursRecorder() {
         return nounoursRecorder;
     }
@@ -223,43 +205,26 @@ public abstract class Nounours {
      * Starts the idle counter which will launch {{@link #onIdle()} after
      * PROP_IDLE_TIME milliseconds of inactivity. Displays the default image.
      *
+     * @param streamLoader tells us how to open files.
      * @param pAnimationHandler responsible for displaying animations
      * @param pSoundHandler responsible for playing sounds
      * @param pVibrateHandler responsible for vibrating the device
      * @param nounoursPropertiesFile properties file specific to the given theme.
-     * @param propertiesFile
-     *            the nounours.properties file containing application-wide
-     *            properties.
-     * @param imageFile contains the list of images in the given theme.
      * @param themeFile contains the list of themes.
-     * @param featureFile contains the list of features for the given theme.
-     * @param imageFeatureFile identifies the position of each feature in each image.
-     * @param adjacentImageFile identifies which features can move from one image to another.
-     * @param animationFile defines the image sequences which make the animations.
-     * @param flingAnimationFile defines which fling gestures trigger which animations.
-     * @param soundFile associates sounds to animations
      * @param themeId the id of the initial theme to use.
      *            The default image is the first image displayed. The display
      *            should also be reset to the default image at the end of
      *            animations.
      * @throws IOException if any of the given files could not be read.
      */
-    public void init(NounoursAnimationHandler pAnimationHandler, NounoursSoundHandler pSoundHandler,
-            NounoursVibrateHandler pVibrateHandler, InputStream nounoursPropertiesFile, InputStream propertiesFile,
-            InputStream imageFile, InputStream themeFile, InputStream featureFile, InputStream imageFeatureFile,
-            InputStream adjacentImageFile, InputStream animationFile, InputStream flingAnimationFile,
-            InputStream soundFile, String themeId) throws IOException {
+    public void init(StreamLoader streamLoader, NounoursAnimationHandler pAnimationHandler, NounoursSoundHandler pSoundHandler,
+            NounoursVibrateHandler pVibrateHandler, InputStream nounoursPropertiesFile, InputStream themeFile,
+            String themeId) throws IOException {
         debug("init");
+
+        this.streamLoader = streamLoader;
         random = new Random(System.currentTimeMillis());
         initHandlersAndThemes(pAnimationHandler, pSoundHandler, pVibrateHandler, nounoursPropertiesFile, themeFile);
-        defaultTheme = new Theme(DEFAULT_THEME_ID, "Default", null);
-        defaultTheme.init(propertiesFile, imageFile, featureFile, imageFeatureFile, adjacentImageFile, animationFile,
-                flingAnimationFile, soundFile);
-
-        if (themeId.equals(Nounours.DEFAULT_THEME_ID))
-            curTheme = defaultTheme;
-        else
-            curTheme = themes.get(themeId);
         useTheme(themeId);
         resetIdle();
         debug("postInit");
@@ -269,10 +234,7 @@ public abstract class Nounours {
         new Thread(pinger).start();
     }
 
-    public Theme getDefaultTheme() {
-        return defaultTheme;
-    }
-
+    @SuppressWarnings("UnusedDeclaration")
     public Theme getCurrentTheme() {
         return curTheme;
     }
@@ -289,9 +251,6 @@ public abstract class Nounours {
         // read application properties
         nounoursProperties = new Properties();
         nounoursProperties.load(nounoursPropertiesFile);
-        File appDir = getAppDir();
-        if (appDir != null)
-            downloadedImagesDir = appDir.getAbsolutePath();
         flingFactor = Float.parseFloat(getProperty(PROP_FLING_FACTOR));
         dropVibrateDuration = Util.getLongProperty(nounoursProperties, PROP_DROP_VIBRATE_DURATION, dropVibrateDuration);
         vibrateInterval = Util.getLongProperty(nounoursProperties, PROP_VIBRATE_INTERVAL, vibrateInterval);
@@ -300,23 +259,6 @@ public abstract class Nounours {
         flingPrecision = (int) Util.getLongProperty(nounoursProperties, PROP_FLING_PRECISION, flingPrecision);
 
         // try first to get remote themes.
-
-        if (appDir != null && !appDir.exists())
-            appDir.mkdirs();
-        if (appDir != null && appDir.exists()) {
-            String localThemeFileName = downloadedImagesDir + File.separator + "themes.csv";
-            File localThemesFile = new File(localThemeFileName);
-            if (localThemesFile.exists()) {
-                try {
-                    ThemeReader themeReader = new ThemeReader(new FileInputStream(localThemesFile));
-                    themes = themeReader.getThemes();
-                } catch (Exception e) {
-                    debug("Error loading themes from sdcard: " + e.getMessage());
-                    debug(e);
-                }
-
-            }
-        }
         if (themes == null || themes.isEmpty()) {
             ThemeReader themeReader = new ThemeReader(themeFile);
             themes = themeReader.getThemes();
@@ -325,46 +267,37 @@ public abstract class Nounours {
 
     }
 
-    protected abstract boolean cacheImages();
+    protected abstract boolean cacheResources();
 
     /**
      * Use the given set of images
      * 
      * @param id the id of the theme to use.
-     * @return true if the theme was successfully loaded.
      */
-    public boolean useTheme(String id) {
+    @SuppressWarnings("WeakerAccess")
+    public void useTheme(String id) {
         debug("Use theme " + id);
         isLoading = true;
         try {
             // Do nothing if this is the current theme.
             if (curTheme != null && id.equals(curTheme.getId()) && loaded) {
                 debug("Already using theme " + id);
-                return true;
+                return;
             }
             // Stop any currently running animation.
             stopAnimation();
 
-            if (id.equals(DEFAULT_THEME_ID))
-                curTheme = defaultTheme;
-            else
-                curTheme = themes.get(id);
-            if (curTheme == null) {
-                debug("Trying to use missing theme " + id);
-                curTheme = defaultTheme;
-                id = Nounours.DEFAULT_THEME_ID;
-            }
-            boolean forceDownload = !isThemeUpToDate(curTheme);
-            if (!curTheme.isLoaded() && !id.equals(DEFAULT_THEME_ID)) {
+            curTheme = themes.get(id);
+            if (!curTheme.isLoaded()) {
 
                 try {
                     debug("init theme " + curTheme);
-                    curTheme.init(downloadedImagesDir, forceDownload);
+                    curTheme.init(streamLoader);
+                    curImage = curTheme.getDefaultImage();
                 } catch (Exception e) {
                     debug("Could not load theme " + curTheme + ": " + e);
                     debug(e);
-                    curTheme = defaultTheme;
-                    return false;
+                    return;
                 }
             }
             // Identify the "special" animations
@@ -372,89 +305,10 @@ public abstract class Nounours {
                 animationHandler.addAnimation(animation);
             }
 
-            int size = curTheme.getImages().size() + curTheme.getSounds().size();
-
-            // Loading the default theme.
-            if (id.equals(DEFAULT_THEME_ID)) {
-                debug("loading the default theme");
-                updatePreloadProgress(curTheme.getImages().size(), size);
-            }
-            // Loading a non-default theme.
-            else {
-                debug("Loading theme");
-                // Access or create the local directory for this theme.
-                String localDirName = downloadedImagesDir + File.separator + curTheme.getId();
-                File localDir = new File(localDirName);
-                if (!localDir.exists())
-                    localDir.mkdirs();
-                URL themeLocation = curTheme.getLocation();
-                try {
-                    int i = 0;
-                    boolean needsDownload = false;
-                    debug("Loading images");
-                    for (Image image : curTheme.getImages().values()) {
-                        i++;
-                        // Update the image data to point to the filenames of
-                        // this
-                        // set
-                        if (themeLocation.getProtocol().startsWith("jar")) {
-                            if (!image.getFilename().startsWith("jar"))
-                                image.setFilename(themeLocation + image.getFilename());
-                        } else {
-                            String imageFileName = new File(image.getFilename()).getName();
-                            /*String remoteFileName = themeLocation + "/" + (useHd() ? "hd/" : "") + imageFileName;
-                            URI remoteImageLocation = new URI(remoteFileName);*/
-                            URI remoteImageLocation = new URI(themeLocation + "/" + imageFileName);                            
-                            File localImageLocation = new File(localDir, imageFileName);
-                            // Download the image if we don't have it.
-                            if (!localImageLocation.exists()) {
-                                if (!Util.downloadFile(remoteImageLocation, localImageLocation)) {
-                                    debug("Error downloading image " + image);
-                                    return false;
-                                }
-
-                                needsDownload = true;
-                            }
-                            image.setFilename(localImageLocation.getAbsolutePath());
-                        }
-                        if (needsDownload)
-                            updateDownloadProgress(i, size);
-                        else
-                            updatePreloadProgress(i, size);
-                    }
-                    debug("Loading " + curTheme.getSounds().size() + " sounds");
-                    for (Sound sound : curTheme.getSounds().values()) {
-                        i++;
-                        String soundFileName = new File(sound.getFilename()).getName();
-                        URI remoteSoundLocation = new URI(themeLocation + "/" + soundFileName);
-                        File localSoundLocation = new File(localDir, soundFileName);
-                        // Download the image if we don't have it.
-                        if (!localSoundLocation.exists()) {
-                            if (!Util.downloadFile(remoteSoundLocation, localSoundLocation))
-                                return false;
-
-                            needsDownload = true;
-                        }
-                        debug("Loaded " + sound.getFilename());
-                        if (needsDownload)
-                            updateDownloadProgress(i, size);
-                        else
-                            updatePreloadProgress(i, size);
-                    }
-                    if (forceDownload)
-                        setIsThemeUpToDate(curTheme);
-                } catch (Exception e) {
-                    debug("Could not use image set " + curTheme + ":  " + e);
-                    debug(e);
-                    themeLoadError(e.toString());
-                    return false;
-                }
-            }
-
             // Reload images.
-            boolean cachedImages = cacheImages();
-            if (!cachedImages)
-                return false;
+            boolean cachedResources = cacheResources();
+            if (!cachedResources)
+                return;
             Runnable resetImage = new Runnable() {
                 public void run() {
                     reset();
@@ -465,29 +319,9 @@ public abstract class Nounours {
             };
             runTask(resetImage);
             loaded = true;
-            return true;
         } finally {
             isLoading = false;
         }
-    }
-
-    /**
-     * Show the user the download progress of images.
-     * 
-     * @param progress the number of items downloaded so far.
-     * @param max the total number of items to download
-     */
-    protected void updateDownloadProgress(int progress, int max) {
-        // Do nothing
-    }
-
-    protected void updatePreloadProgress(int progress, int max) {
-        // Do nothing
-    }
-
-    @SuppressWarnings("UnusedParameters")
-    protected void themeLoadError(String message) {
-        // Do nothing
     }
 
     /*******************************************************************
@@ -495,7 +329,7 @@ public abstract class Nounours {
      ******************************************************************/
     // Begin sound-related methods
     /**
-     * Mute or unmute the sound.
+     * Mute or un-mute the sound.
      * 
      * @param enableSound if true, sounds will be played, otherwise sounds will be muted.
      */
@@ -504,12 +338,9 @@ public abstract class Nounours {
         soundHandler.setEnableSound(enableSound);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setEnableVibrate(boolean enableVibrate) {
         this.enableVibrate = enableVibrate;
-    }
-
-    public void setEnableRandomAnimations(boolean enableRandomAnimations) {
-        this.enableRandomAnimations = enableRandomAnimations;
     }
 
     /**
@@ -519,18 +350,11 @@ public abstract class Nounours {
         return enableSound;
     }
 
-    public boolean isVibrateEnabled() {
-        return enableVibrate;
-    }
-
-    public boolean isRandomAnimationsEnabled() {
-        return enableRandomAnimations;
-    }
-
     public Sound getSound(String soundId) {
         return curTheme.getSounds().get(soundId);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void stopSound() {
         soundHandler.stopSound();
     }
@@ -556,8 +380,8 @@ public abstract class Nounours {
         debug("Random animation");
         int numAnimations = getAnimations().size();
         boolean createAnimation = random.nextBoolean();
-        Animation randomAnimation = null;
-        if (createAnimation && isRandomAnimationsEnabled())
+        Animation randomAnimation;
+        if (createAnimation)
             randomAnimation = createRandomAnimation();
         else {
             if (numAnimations == 0)
@@ -717,6 +541,7 @@ public abstract class Nounours {
     /**
      * @return true if Nounours is currently shaking.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public boolean isShaking() {
         return isShaking;
     }
@@ -789,6 +614,7 @@ public abstract class Nounours {
     /**
      * @param doPing if true, the pinger will periodically check the application for idleness.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void doPing(boolean doPing) {
         pinger.setDoPing(doPing);
     }
@@ -797,7 +623,7 @@ public abstract class Nounours {
      * This method is called when the application has been idle for the time
      * indicated by the property PROP_IDLE_TIME.
      */
-    public void onIdle() {
+    void onIdle() {
         debug("Idle!");
         resetIdle();
         if (curTheme != null && curTheme.getIdleAnimation() != null) {
@@ -822,12 +648,9 @@ public abstract class Nounours {
         return false;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setIdleTimeout(long idleTimeout) {
         this.idleTimeout = idleTimeout;
-    }
-
-    public long getIdleTimeout() {
-        return idleTimeout;
     }
 
     /**
@@ -846,7 +669,7 @@ public abstract class Nounours {
                 }
             });
         } else {
-            if (isIdleForRandomAnimation() && !isAnimationRunning() && isRandomAnimationsEnabled()) {
+            if (isIdleForRandomAnimation() && !isAnimationRunning()) {
                 runTask(new Runnable() {
                     public void run() {
                         Animation randomAnimation = createRandomAnimation();
@@ -880,30 +703,19 @@ public abstract class Nounours {
      ******************************************************************/
 
     // Begin image-related methods
-    /**
-     * @return a Map of image id to Image
-     */
-    public Map<String, Image> getImages() {
-        return curTheme.getImages();
-    }
 
     /**
      * @return all the themes.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public Map<String, Theme> getThemes() {
         return themes;
     }
 
     /**
-     * @return the image which is currently displayed.
-     */
-    protected Image getCurrentImage() {
-        return curImage;
-    }
-
-    /**
      * @return the default image of the current theme.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public Image getDefaultImage() {
         return curTheme.getDefaultImage();
     }
@@ -920,14 +732,6 @@ public abstract class Nounours {
             displayImage(curImage);
 
     }
-
-    /**
-     * @return true if HD images should be used.
-     */
-    /*
-    protected boolean useHd() {
-    	return false;
-    }*/
 
     // End image-related methods
 
@@ -960,7 +764,7 @@ public abstract class Nounours {
      * @return the time in milliseconds of each pulse, when the device vibrates
      *         in pulses.
      */
-    public long getVibrateInterval() {
+    long getVibrateInterval() {
         return vibrateInterval;
     }
 
@@ -980,8 +784,4 @@ public abstract class Nounours {
             ((Throwable) o).printStackTrace();
     }
 
-    public File getAppDir() {
-        String dir = nounoursProperties.getProperty(PROP_DOWNLOADED_IMAGES_DIR);
-        return new File(dir);
-    }
 }

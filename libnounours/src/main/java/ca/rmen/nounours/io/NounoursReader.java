@@ -28,6 +28,7 @@ import java.io.InputStream;
  * @author Carmen Alvarez
  *
  */
+@SuppressWarnings("WeakerAccess")
 abstract public class NounoursReader {
     private CSVReader reader = null;
 

@@ -18,15 +18,15 @@
  */
 package ca.rmen.nounours.io;
 
+import ca.rmen.nounours.data.Theme;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import ca.rmen.nounours.data.Theme;
 
 /**
  * Reads a CSV file of image data.
@@ -62,12 +62,15 @@ public class ThemeReader extends NounoursReader {
     protected void readLine(final CSVReader reader) {
         final String id = reader.getValue(COL_ID);
         final String name = reader.getValue(COL_NAME);
-        URL url;
+        URI uri;
         try {
-            url = new URL(reader.getValue(COL_URL));
-            final Theme theme = new Theme(id, name, url);
+            String folder = reader.getValue(COL_URL);
+            if (folder.equals(".")) folder = "file://" + System.getProperty("user.dir");
+            uri = new URI(folder);
+
+            final Theme theme = new Theme(id, name, uri);
             themes.put(id, theme);
-        } catch (MalformedURLException e) {
+        } catch (URISyntaxException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
