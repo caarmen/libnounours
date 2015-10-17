@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import ca.rmen.nounours.data.Animation;
 import ca.rmen.nounours.data.Feature;
@@ -37,6 +38,8 @@ import ca.rmen.nounours.data.FlingAnimation;
 import ca.rmen.nounours.data.Image;
 import ca.rmen.nounours.data.Sound;
 import ca.rmen.nounours.data.Theme;
+import ca.rmen.nounours.io.DefaultStreamLoader;
+import ca.rmen.nounours.io.StreamLoader;
 import ca.rmen.nounours.io.ThemeReader;
 
 /**
@@ -78,7 +81,6 @@ public abstract class Nounours {
     private long idleTimeout = 60000;
     private long pingInterval = 5000;
     private long lastActionTimestamp = -1;
-    private String downloadedImagesDir = null;
 
     private Theme defaultTheme = null;
     private Map<String, Theme> themes = null;
@@ -92,6 +94,7 @@ public abstract class Nounours {
     private NounoursAnimationHandler animationHandler = null;
     private NounoursVibrateHandler vibrateHandler = null;
     private NounoursRecorder nounoursRecorder = new NounoursRecorder();
+    private StreamLoader streamLoader;
 
     private Properties nounoursProperties;
 
@@ -113,10 +116,6 @@ public abstract class Nounours {
      * @param task the task to run in the background.
      */
     protected abstract void runTask(Runnable task);
-
-    protected abstract boolean isThemeUpToDate(Theme theme);
-
-    protected abstract void setIsThemeUpToDate(Theme theme);
 
     public boolean isLoading() {
         return isLoading;
@@ -223,6 +222,7 @@ public abstract class Nounours {
      * Starts the idle counter which will launch {{@link #onIdle()} after
      * PROP_IDLE_TIME milliseconds of inactivity. Displays the default image.
      *
+     * @param streamLoader tells us how to open files.
      * @param pAnimationHandler responsible for displaying animations
      * @param pSoundHandler responsible for playing sounds
      * @param pVibrateHandler responsible for vibrating the device
@@ -244,12 +244,14 @@ public abstract class Nounours {
      *            animations.
      * @throws IOException if any of the given files could not be read.
      */
-    public void init(NounoursAnimationHandler pAnimationHandler, NounoursSoundHandler pSoundHandler,
+    public void init(StreamLoader streamLoader, NounoursAnimationHandler pAnimationHandler, NounoursSoundHandler pSoundHandler,
             NounoursVibrateHandler pVibrateHandler, InputStream nounoursPropertiesFile, InputStream propertiesFile,
             InputStream imageFile, InputStream themeFile, InputStream featureFile, InputStream imageFeatureFile,
             InputStream adjacentImageFile, InputStream animationFile, InputStream flingAnimationFile,
             InputStream soundFile, String themeId) throws IOException {
         debug("init");
+
+        this.streamLoader = streamLoader;
         random = new Random(System.currentTimeMillis());
         initHandlersAndThemes(pAnimationHandler, pSoundHandler, pVibrateHandler, nounoursPropertiesFile, themeFile);
         defaultTheme = new Theme(DEFAULT_THEME_ID, "Default", null);
@@ -290,8 +292,6 @@ public abstract class Nounours {
         nounoursProperties = new Properties();
         nounoursProperties.load(nounoursPropertiesFile);
         File appDir = getAppDir();
-        if (appDir != null)
-            downloadedImagesDir = appDir.getAbsolutePath();
         flingFactor = Float.parseFloat(getProperty(PROP_FLING_FACTOR));
         dropVibrateDuration = Util.getLongProperty(nounoursProperties, PROP_DROP_VIBRATE_DURATION, dropVibrateDuration);
         vibrateInterval = Util.getLongProperty(nounoursProperties, PROP_VIBRATE_INTERVAL, vibrateInterval);
@@ -303,20 +303,6 @@ public abstract class Nounours {
 
         if (appDir != null && !appDir.exists())
             appDir.mkdirs();
-        if (appDir != null && appDir.exists()) {
-            String localThemeFileName = downloadedImagesDir + File.separator + "themes.csv";
-            File localThemesFile = new File(localThemeFileName);
-            if (localThemesFile.exists()) {
-                try {
-                    ThemeReader themeReader = new ThemeReader(new FileInputStream(localThemesFile));
-                    themes = themeReader.getThemes();
-                } catch (Exception e) {
-                    debug("Error loading themes from sdcard: " + e.getMessage());
-                    debug(e);
-                }
-
-            }
-        }
         if (themes == null || themes.isEmpty()) {
             ThemeReader themeReader = new ThemeReader(themeFile);
             themes = themeReader.getThemes();
@@ -354,12 +340,11 @@ public abstract class Nounours {
                 curTheme = defaultTheme;
                 id = Nounours.DEFAULT_THEME_ID;
             }
-            boolean forceDownload = !isThemeUpToDate(curTheme);
             if (!curTheme.isLoaded() && !id.equals(DEFAULT_THEME_ID)) {
 
                 try {
                     debug("init theme " + curTheme);
-                    curTheme.init(downloadedImagesDir, forceDownload);
+                    curTheme.init(streamLoader);
                 } catch (Exception e) {
                     debug("Could not load theme " + curTheme + ": " + e);
                     debug(e);
@@ -383,11 +368,11 @@ public abstract class Nounours {
             else {
                 debug("Loading theme");
                 // Access or create the local directory for this theme.
-                String localDirName = downloadedImagesDir + File.separator + curTheme.getId();
+                String localDirName = getAppDir().getAbsolutePath() + File.separator + curTheme.getId();
                 File localDir = new File(localDirName);
                 if (!localDir.exists())
                     localDir.mkdirs();
-                URL themeLocation = curTheme.getLocation();
+                URI themeLocation = curTheme.getLocation();
                 try {
                     int i = 0;
                     boolean needsDownload = false;
@@ -397,9 +382,12 @@ public abstract class Nounours {
                         // Update the image data to point to the filenames of
                         // this
                         // set
-                        if (themeLocation.getProtocol().startsWith("jar")) {
+                        if (themeLocation.getScheme().startsWith("jar")) {
                             if (!image.getFilename().startsWith("jar"))
                                 image.setFilename(themeLocation + image.getFilename());
+                        } else if (themeLocation.getScheme().equals("file")) {
+                            if(!image.getFilename().startsWith("file"))
+                                image.setFilename(themeLocation + File.separator + image.getFilename());
                         } else {
                             String imageFileName = new File(image.getFilename()).getName();
                             /*String remoteFileName = themeLocation + "/" + (useHd() ? "hd/" : "") + imageFileName;
@@ -423,26 +411,26 @@ public abstract class Nounours {
                             updatePreloadProgress(i, size);
                     }
                     debug("Loading " + curTheme.getSounds().size() + " sounds");
-                    for (Sound sound : curTheme.getSounds().values()) {
-                        i++;
-                        String soundFileName = new File(sound.getFilename()).getName();
-                        URI remoteSoundLocation = new URI(themeLocation + "/" + soundFileName);
-                        File localSoundLocation = new File(localDir, soundFileName);
-                        // Download the image if we don't have it.
-                        if (!localSoundLocation.exists()) {
-                            if (!Util.downloadFile(remoteSoundLocation, localSoundLocation))
-                                return false;
+                    if (!themeLocation.getScheme().equals("file")) {
+                        for (Sound sound : curTheme.getSounds().values()) {
+                            i++;
+                            String soundFileName = new File(sound.getFilename()).getName();
+                            URI remoteSoundLocation = new URI(themeLocation + "/" + soundFileName);
+                            File localSoundLocation = new File(localDir, soundFileName);
+                            // Download the image if we don't have it.
+                            if (!localSoundLocation.exists()) {
+                                if (!Util.downloadFile(remoteSoundLocation, localSoundLocation))
+                                    return false;
 
-                            needsDownload = true;
+                                needsDownload = true;
+                            }
+                            debug("Loaded " + sound.getFilename());
+                            if (needsDownload)
+                                updateDownloadProgress(i, size);
+                            else
+                                updatePreloadProgress(i, size);
                         }
-                        debug("Loaded " + sound.getFilename());
-                        if (needsDownload)
-                            updateDownloadProgress(i, size);
-                        else
-                            updatePreloadProgress(i, size);
                     }
-                    if (forceDownload)
-                        setIsThemeUpToDate(curTheme);
                 } catch (Exception e) {
                     debug("Could not use image set " + curTheme + ":  " + e);
                     debug(e);

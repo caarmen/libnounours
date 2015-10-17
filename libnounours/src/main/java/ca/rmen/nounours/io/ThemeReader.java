@@ -21,6 +21,8 @@ package ca.rmen.nounours.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,12 +64,12 @@ public class ThemeReader extends NounoursReader {
     protected void readLine(final CSVReader reader) {
         final String id = reader.getValue(COL_ID);
         final String name = reader.getValue(COL_NAME);
-        URL url;
+        URI uri;
         try {
-            url = new URL(reader.getValue(COL_URL));
-            final Theme theme = new Theme(id, name, url);
+            uri = new URI(reader.getValue(COL_URL));
+            final Theme theme = new Theme(id, name, uri);
             themes.put(id, theme);
-        } catch (MalformedURLException e) {
+        } catch (URISyntaxException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

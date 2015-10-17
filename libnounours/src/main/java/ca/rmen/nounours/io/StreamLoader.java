@@ -16,36 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Nounours.  If not, see <http://www.gnu.org/licenses/>.
  */
-apply plugin: 'java'
-apply plugin: 'maven'
+package ca.rmen.nounours.io;
 
-version = '1.2.0-SNAPSHOT'
-group = "ca.rmen"
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compile 'org.apache.httpcomponents:httpclient:4.4'
-}
-
-compileJava {
-    sourceCompatibility = 1.6
-    targetCompatibility = 1.6
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives javadocJar
-    archives sourcesJar
+public interface StreamLoader {
+    InputStream open(URI uri) throws IOException;
 }

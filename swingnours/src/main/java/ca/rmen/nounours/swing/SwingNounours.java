@@ -41,6 +41,7 @@ import javax.swing.JScrollPane;
 import ca.rmen.nounours.Nounours;
 import ca.rmen.nounours.data.Image;
 import ca.rmen.nounours.data.Theme;
+import ca.rmen.nounours.io.DefaultStreamLoader;
 
 /**
  * Displays the nounours application in a JFrame.
@@ -104,7 +105,7 @@ public class SwingNounours extends Nounours implements ActionListener {
         }
 
         // Initialize
-        init(animationHandler, soundHandler, vibrateHandler, globalPropertiesFile, defaultThemePropertiesFile,
+        init(new DefaultStreamLoader(new File(".")), animationHandler, soundHandler, vibrateHandler, globalPropertiesFile, defaultThemePropertiesFile,
                 imageFile, imageSetFile, featureFile, imageFeatureFile, adjacentImageFile, animationFile,
                 flingAnimationFile, soundFile, themeId);
     }
@@ -285,19 +286,6 @@ public class SwingNounours extends Nounours implements ActionListener {
 
         return component.getImageWidth();
     }
-
-    @Override
-    protected boolean isThemeUpToDate(Theme theme) {
-        // TODO Auto-generated method stub
-        return true;
-    }
-
-    @Override
-    protected void setIsThemeUpToDate(Theme theme) {
-        // TODO Auto-generated method stub
-
-    }
-
 }
 
 /**

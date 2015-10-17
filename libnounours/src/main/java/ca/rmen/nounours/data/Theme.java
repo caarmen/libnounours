@@ -32,14 +32,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import ca.rmen.nounours.Util;
-import ca.rmen.nounours.io.AdjacentImageReader;
-import ca.rmen.nounours.io.AnimationReader;
-import ca.rmen.nounours.io.FeatureReader;
-import ca.rmen.nounours.io.FlingAnimationReader;
-import ca.rmen.nounours.io.ImageFeatureReader;
-import ca.rmen.nounours.io.ImageReader;
-import ca.rmen.nounours.io.SoundReader;
-import ca.rmen.nounours.io.ThemeUpdateListener;
+import ca.rmen.nounours.io.*;
 
 public class Theme {
 
@@ -65,13 +58,13 @@ public class Theme {
     private Image defaultImage = null;
     private final String id;
     private final String name;
-    private URL location;
+    private URI location;
     private int height;
     private int width;
 
     private boolean isLoaded = false;
 
-    public Theme(String id, String name, URL location) {
+    public Theme(String id, String name, URI location) {
         this.id = id;
         this.name = name;
         this.location = location;
@@ -93,7 +86,7 @@ public class Theme {
         return name;
     }
 
-    public URL getLocation() {
+    public URI getLocation() {
         return location;
     }
 
@@ -106,53 +99,15 @@ public class Theme {
         return id + "," + name + "," + location;
     }
 
-    public boolean update(String downloadedFilesDir, ThemeUpdateListener listener) throws IllegalStateException,
-            IOException, URISyntaxException {
-        boolean updateOK = true;
-        File themeDir = new File(downloadedFilesDir + File.separator + id);
-        String[] simpleFiles = new String[] { "nounours.properties", "feature.csv", "imagefeatureassoc.csv",
-                "adjacentimage.csv", "animation.csv", "flinganimation.csv", "orientationimage.csv" };
-        int numberOfFiles = simpleFiles.length + images.size() + sounds.size() + 2;
-        int fileNumber = 1;
-        for (String fileName : simpleFiles) {
-            boolean fileUpdatedOk = updateFile(themeDir, fileName);
-            listener.updatedFile(fileName, fileNumber++, numberOfFiles, fileUpdatedOk);
-            updateOK = updateOK && fileUpdatedOk;
-
-        }
-        InputStream imageFile = getFileInputStream(themeDir, "image.csv", true);
-        listener.updatedFile("image.csv", fileNumber++, numberOfFiles, imageFile != null);
-        ImageReader imageReader = new ImageReader(imageFile);
-        Map<String, Image> newImages = imageReader.getImages();
-        for (Image image : newImages.values()) {
-            boolean fileUpdatedOk = updateFile(themeDir, image.getFilename());
-            listener.updatedFile(image.getFilename(), fileNumber++, numberOfFiles, fileUpdatedOk);
-            updateOK = updateOK && fileUpdatedOk;
-        }
-        InputStream soundFile = getFileInputStream(themeDir, "sound.csv", true);
-        listener.updatedFile("sound.csv", fileNumber++, numberOfFiles, soundFile != null);
-        SoundReader soundReader = new SoundReader(soundFile);
-        Map<String, Sound> newSounds = soundReader.getSounds();
-        for (Sound sound : newSounds.values()) {
-            boolean fileUpdatedOk = updateFile(themeDir, sound.getFilename());
-            listener.updatedFile(sound.getFilename(), fileNumber++, numberOfFiles, fileUpdatedOk);
-            updateOK = updateOK && fileUpdatedOk;
-        }
-        return updateOK;
-    }
-
-    public void init(String downloadedFilesDir, boolean forceDownload) throws URISyntaxException, IOException {
-        File themeDir = new File(downloadedFilesDir + File.separator + id);
-        if (!themeDir.exists())
-            themeDir.mkdirs();
-        InputStream propertiesFile = getFileInputStream(themeDir, "nounours.properties", forceDownload);
-        InputStream imagesFile = getFileInputStream(themeDir, "image.csv", forceDownload);
-        InputStream featureFile = getFileInputStream(themeDir, "feature.csv", forceDownload);
-        InputStream imageFeatureFile = getFileInputStream(themeDir, "imagefeatureassoc.csv", forceDownload);
-        InputStream adjacentImageFile = getFileInputStream(themeDir, "adjacentimage.csv", forceDownload);
-        InputStream animationFile = getFileInputStream(themeDir, "animation.csv", forceDownload);
-        InputStream flingAnimationFile = getFileInputStream(themeDir, "flinganimation.csv", forceDownload);
-        InputStream soundFile = getFileInputStream(themeDir, "sound.csv", forceDownload);
+    public void init(StreamLoader streamLoader) throws URISyntaxException, IOException {
+        InputStream propertiesFile = streamLoader.open(new URI(location.toString() + File.separator + "nounours.properties"));
+        InputStream imagesFile = streamLoader.open(new URI(location.toString() + File.separator + "image.csv"));
+        InputStream featureFile = streamLoader.open(new URI(location.toString() + File.separator + "feature.csv"));
+        InputStream imageFeatureFile = streamLoader.open(new URI(location.toString() + File.separator + "imagefeatureassoc.csv"));
+        InputStream adjacentImageFile = streamLoader.open(new URI(location.toString() + File.separator + "adjacentimage.csv"));
+        InputStream animationFile = streamLoader.open(new URI(location.toString() + File.separator + "animation.csv"));
+        InputStream flingAnimationFile = streamLoader.open(new URI(location.toString() + File.separator + "flinganimation.csv"));
+        InputStream soundFile = streamLoader.open(new URI(location.toString() + File.separator + "sound.csv"));
         init(propertiesFile, imagesFile, featureFile, imageFeatureFile, adjacentImageFile, animationFile,
                 flingAnimationFile, soundFile);
         isLoaded = true;
@@ -328,23 +283,6 @@ public class Theme {
         }
         return true;
 
-    }
-
-    private InputStream getFileInputStream(File themeDir, String fileName, boolean forceDownload)
-            throws IllegalStateException, IOException, URISyntaxException {
-
-        if (location.getProtocol().toLowerCase().startsWith("jar")) {
-            String fullPath = location.toString() + fileName;
-            String filePath = fullPath.substring(fullPath.indexOf("!") + 1);
-            return getClass().getResourceAsStream(filePath);
-        }
-        File file = new File(themeDir, fileName);
-        if (!file.exists() || forceDownload) {
-            Util.downloadFile(new URI(location + "/" + fileName), file);
-        }
-        if (!file.exists())
-            return null;
-        return new FileInputStream(file);
     }
 
 }
