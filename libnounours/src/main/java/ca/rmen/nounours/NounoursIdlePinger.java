@@ -24,7 +24,7 @@ package ca.rmen.nounours;
  * @author Carmen Alvarez
  *
  */
-public class NounoursIdlePinger implements Runnable {
+class NounoursIdlePinger implements Runnable {
 
     private Nounours nounours = null;
     private long pingInterval = 5000;

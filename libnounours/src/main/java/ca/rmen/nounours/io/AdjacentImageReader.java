@@ -18,12 +18,12 @@
  */
 package ca.rmen.nounours.io;
 
+import ca.rmen.nounours.data.Image;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
-import ca.rmen.nounours.data.Image;
 
 /**
  * Reads in a file of adjacent image associations. The required columns are:

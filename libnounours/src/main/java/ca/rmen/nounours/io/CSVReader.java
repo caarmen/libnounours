@@ -32,6 +32,7 @@ import java.io.InputStreamReader;
  * @author Carmen Alvarez
  *
  */
+@SuppressWarnings("WeakerAccess")
 public class CSVReader {
 
     private BufferedReader reader = null;

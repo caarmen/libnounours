@@ -18,13 +18,13 @@
  */
 package ca.rmen.nounours.io;
 
+import ca.rmen.nounours.data.FlingAnimation;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import ca.rmen.nounours.data.FlingAnimation;
 
 /**
  * Reads a CSV file with data indicating which animations to display during

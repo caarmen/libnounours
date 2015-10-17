@@ -18,13 +18,9 @@
  */
 package ca.rmen.nounours;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Properties;
-
+import ca.rmen.nounours.data.Feature;
+import ca.rmen.nounours.data.Image;
+import ca.rmen.nounours.data.ImageFeature;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -40,9 +36,11 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
-import ca.rmen.nounours.data.Feature;
-import ca.rmen.nounours.data.Image;
-import ca.rmen.nounours.data.ImageFeature;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Properties;
 
 /**
  * Provides utility methods used by the Nounours application.
@@ -92,6 +90,7 @@ public class Util {
      * @return the value of the given property in the properties, if it is
      *         specified. Otherwise returns the defaultValue.
      */
+    @SuppressWarnings("SameParameterValue")
     public static float getFloatProperty(Properties properties, String key, float defaultValue) {
         Object value = properties.get(key);
         if (value == null)
@@ -199,7 +198,7 @@ public class Util {
      *            the y-location of the mouse/touch
      * @return the distance between the point and the feature.
      */
-    public static int getDistance(Image image, String featureId, int x, int y) {
+    private static int getDistance(Image image, String featureId, int x, int y) {
         ImageFeature featureImage = image.getImageFeature(featureId);
         if (featureImage == null) {
             System.out.println("Feature " + featureId + " is not in image " + image);
@@ -273,7 +272,7 @@ public class Util {
      * @param retries number of times to retry the download in case of error.
      * @return true if the file was successfully downloaded, false otherwise.
      */
-    public static boolean downloadFile(URI remoteFileLocation, File localFileLocation, int retries) {
+    private static boolean downloadFile(URI remoteFileLocation, File localFileLocation, int retries) {
 
         try {
             HttpClient httpClient = getHttpClient();
@@ -306,29 +305,6 @@ public class Util {
             return false;
         }
 
-    }
-
-    public static String getRemoteFileContents(URI remoteFileLocation, int retries) {
-        try {
-
-            HttpClient httpClient = getHttpClient();
-            HttpGet httpGet = new HttpGet(remoteFileLocation);
-            HttpResponse httpResponse = httpClient.execute(httpGet);
-            HttpEntity httpEntity = httpResponse.getEntity();
-            InputStream inputStream = httpEntity.getContent();
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            final byte[] buffer = new byte[1500];
-            for (int read = inputStream.read(buffer); read != -1; read = inputStream.read(buffer)) {
-                outputStream.write(buffer, 0, read);
-                outputStream.flush();
-            }
-            outputStream.close();
-            return outputStream.toString();
-        } catch (Exception e) {
-            if (retries > 0)
-                return getRemoteFileContents(remoteFileLocation, retries - 1);
-            return null;
-        }
     }
 
     /**

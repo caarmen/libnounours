@@ -19,13 +19,13 @@
 
 package ca.rmen.nounours.io;
 
+import ca.rmen.nounours.data.Feature;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import ca.rmen.nounours.data.Feature;
 
 /**
  * Reads a CSV file of features. The required column names are: <code>

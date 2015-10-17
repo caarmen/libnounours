@@ -18,17 +18,15 @@
  */
 package ca.rmen.nounours.io;
 
+import ca.rmen.nounours.data.Theme;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import ca.rmen.nounours.data.Theme;
 
 /**
  * Reads a CSV file of image data.

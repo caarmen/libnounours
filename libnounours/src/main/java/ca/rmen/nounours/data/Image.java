@@ -18,13 +18,7 @@
  */
 package ca.rmen.nounours.data;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class represents a picture of nounours. In a given picture, a set of

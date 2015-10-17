@@ -18,32 +18,26 @@
  */
 package ca.rmen.nounours.data;
 
+import ca.rmen.nounours.Util;
+import ca.rmen.nounours.io.*;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import ca.rmen.nounours.Util;
-import ca.rmen.nounours.io.*;
+import java.util.*;
 
 public class Theme {
 
-    public static final String PROP_SHAKE_ANIMATION = "animation.shake";
-    public static final String PROP_RESUME_ANIMATION = "animation.resume";
-    public static final String PROP_IDLE_ANIMATION = "animation.idle";
-    public static final String PROP_END_IDLE_ANIMATION = "animation.idle.end";
-    public static final String PROP_HELP_IMAGE = "help.image";
-    public static final String PROP_DEFAULT_IMAGE = "default.image";
-    public static final String PROP_HEIGHT = "resolution.height";
-    public static final String PROP_WIDTH = "resolution.width";
+    private static final String PROP_SHAKE_ANIMATION = "animation.shake";
+    private static final String PROP_RESUME_ANIMATION = "animation.resume";
+    private static final String PROP_IDLE_ANIMATION = "animation.idle";
+    private static final String PROP_END_IDLE_ANIMATION = "animation.idle.end";
+    private static final String PROP_HELP_IMAGE = "help.image";
+    private static final String PROP_DEFAULT_IMAGE = "default.image";
+    private static final String PROP_HEIGHT = "resolution.height";
+    private static final String PROP_WIDTH = "resolution.width";
 
     private Map<String, Image> images = new HashMap<String, Image>();
     private Map<String, Animation> animations = new HashMap<String, Animation>();
@@ -53,12 +47,11 @@ public class Theme {
     private Animation resumeAnimation = null;
     private Animation idleAnimation = null;
     private Animation endIdleAnimation = null;
-    private Properties properties = null;
     private Image helpImage = null;
     private Image defaultImage = null;
     private final String id;
     private final String name;
-    private URI location;
+    private final URI location;
     private int height;
     private int width;
 
@@ -82,6 +75,7 @@ public class Theme {
         return id;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public String getName() {
         return name;
     }
@@ -118,7 +112,7 @@ public class Theme {
             InputStream imageFeatureFile, InputStream adjacentImageFile, InputStream animationFile,
             InputStream flingAnimationFile, InputStream soundFile) throws IOException {
         // Read theme properties
-        properties = new Properties();
+        Properties properties = new Properties();
         properties.load(propertiesFile);
         String shakeAnimationId = properties.getProperty(PROP_SHAKE_ANIMATION);
         String resumeAnimationId = properties.getProperty(PROP_RESUME_ANIMATION);
@@ -248,15 +242,6 @@ public class Theme {
     }
 
     /**
-     * Get the properties.
-     * 
-     * @return the properties
-     */
-    public Properties getProperties() {
-        return properties;
-    }
-
-    /**
      * Get the helpImage.
      * 
      * @return the helpImage
@@ -272,17 +257,6 @@ public class Theme {
      */
     public Image getDefaultImage() {
         return defaultImage;
-    }
-
-    private boolean updateFile(File themeDir, String fileName) throws IllegalStateException,
-            URISyntaxException {
-        File file = new File(themeDir, fileName);
-        if (!Util.downloadFile(new URI(location + "/" + fileName), file)) {
-            System.out.println("Could not download file " + fileName + " when updating " + this);
-            return false;
-        }
-        return true;
-
     }
 
 }

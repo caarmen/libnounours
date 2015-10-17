@@ -27,7 +27,7 @@ package ca.rmen.nounours.data;
 public class Sound {
 
     private final String id;
-    private String filename;
+    private final String filename;
 
     /**
      * @param id
@@ -46,10 +46,6 @@ public class Sound {
 
     public String getFilename() {
         return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
     }
 
     @Override

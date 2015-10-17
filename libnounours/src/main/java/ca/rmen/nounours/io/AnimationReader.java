@@ -18,14 +18,14 @@
  */
 package ca.rmen.nounours.io;
 
+import ca.rmen.nounours.data.Animation;
+import ca.rmen.nounours.data.Image;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import ca.rmen.nounours.data.Animation;
-import ca.rmen.nounours.data.Image;
 
 /**
  * Reads in the CSV file listing the possible animations. The required columns

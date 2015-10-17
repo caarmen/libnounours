@@ -18,17 +18,12 @@
  */
 package ca.rmen.nounours;
 
-import ca.rmen.nounours.data.*;
-import ca.rmen.nounours.io.ThemeReader;
+import ca.rmen.nounours.data.Animation;
+import ca.rmen.nounours.data.AnimationImage;
+import ca.rmen.nounours.data.Image;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
 
 /**
  * Records an animation.
@@ -42,7 +37,7 @@ public class NounoursRecorder {
     private Image lastImage;
     private Animation animation;
 
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private void init() {
         lastFrameTimestamp = 0;
@@ -52,6 +47,7 @@ public class NounoursRecorder {
         animation = null;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void start() {
         if (lastFrameTimestamp > 0) throw new IllegalStateException("Already recording");
         long now = System.currentTimeMillis();
@@ -67,16 +63,19 @@ public class NounoursRecorder {
         return lastFrameTimestamp > 0;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public boolean isPaused() {
         return lastPauseTimestamp > 0 && lastResumeTimestamp == 0;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void pause() {
         if (!isRecording()) throw new IllegalStateException("Not recording");
         if (isPaused()) throw new IllegalStateException("Already paused");
         lastPauseTimestamp = System.currentTimeMillis();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void resume() {
         if (!isRecording()) throw new IllegalStateException("Not recording");
         if (!isPaused()) throw new IllegalStateException("Not paused");
@@ -107,6 +106,7 @@ public class NounoursRecorder {
         lastImage = null;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public Animation stop() {
         if (!isRecording()) throw new IllegalStateException("Not recording");
         addLastImage();

@@ -18,14 +18,14 @@
  */
 package ca.rmen.nounours.io;
 
+import ca.rmen.nounours.data.Feature;
+import ca.rmen.nounours.data.Image;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import ca.rmen.nounours.data.Feature;
-import ca.rmen.nounours.data.Image;
 
 /**
  * Reads a CSV file of image-feature associations. The required columns are:
@@ -47,7 +47,7 @@ public class ImageFeatureReader extends NounoursReader {
     private static final String COL_Y = "Y";
 
     private Map<String, Image> imageMap = new HashMap<String, Image>();
-    private Map<String, Feature> featureMap = new HashMap<String, Feature>();
+    private final Map<String, Feature> featureMap = new HashMap<String, Feature>();
 
     /**
      * Immediately begins reading the CSV file.
