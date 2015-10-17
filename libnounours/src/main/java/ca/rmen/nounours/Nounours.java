@@ -344,40 +344,6 @@ public abstract class Nounours {
                 animationHandler.addAnimation(animation);
             }
 
-            int size = curTheme.getImages().size();
-
-            // Loading the default theme.
-            if (id.equals(DEFAULT_THEME_ID)) {
-                debug("loading the default theme");
-                updatePreloadProgress(curTheme.getImages().size(), size);
-            }
-            // Loading a non-default theme.
-            else {
-                debug("Loading theme");
-                URI themeLocation = curTheme.getLocation();
-                try {
-                    int i = 0;
-                    debug("Loading images");
-                    for (Image image : curTheme.getImages().values()) {
-                        i++;
-                        // Update the image data to point to the filenames of
-                        // this set
-                        if (themeLocation.getScheme().startsWith("jar")) {
-                            if (!image.getFilename().startsWith("jar"))
-                                image.setFilename(themeLocation + image.getFilename());
-                        } else if (themeLocation.getScheme().equals("file")) {
-                            if(!image.getFilename().startsWith("file"))
-                                image.setFilename(themeLocation + File.separator + image.getFilename());
-                        }
-                        updatePreloadProgress(i, size);
-                    }
-                } catch (Exception e) {
-                    debug("Could not use image set " + curTheme + ":  " + e);
-                    debug(e);
-                    return false;
-                }
-            }
-
             // Reload images.
             boolean cachedImages = cacheImages();
             if (!cachedImages)
@@ -396,11 +362,6 @@ public abstract class Nounours {
         } finally {
             isLoading = false;
         }
-    }
-
-    @SuppressWarnings({"WeakerAccess", "UnusedParameters", "EmptyMethod"})
-    protected void updatePreloadProgress(int progress, int max) {
-        // Do nothing
     }
 
     /*******************************************************************

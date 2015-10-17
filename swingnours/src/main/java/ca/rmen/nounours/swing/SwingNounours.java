@@ -105,7 +105,7 @@ public class SwingNounours extends Nounours implements ActionListener {
         }
 
         // Initialize
-        init(new DefaultStreamLoader(new File(".")), animationHandler, soundHandler, vibrateHandler, globalPropertiesFile, defaultThemePropertiesFile,
+        init(new DefaultStreamLoader(), animationHandler, soundHandler, vibrateHandler, globalPropertiesFile, defaultThemePropertiesFile,
                 imageFile, imageSetFile, featureFile, imageFeatureFile, adjacentImageFile, animationFile,
                 flingAnimationFile, soundFile, themeId);
     }
