@@ -239,6 +239,10 @@ public abstract class Nounours {
         return curTheme;
     }
 
+    public Image getCurrentImage() {
+        return curImage;
+    }
+
     /**
      * 
      */

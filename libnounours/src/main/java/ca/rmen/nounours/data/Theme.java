@@ -56,6 +56,7 @@ public class Theme {
     private int width;
 
     private boolean isLoaded = false;
+    private Properties themeProperties;
 
     public Theme(String id, String name, URI location) {
         this.id = id;
@@ -108,16 +109,16 @@ public class Theme {
             InputStream imageFeatureFile, InputStream adjacentImageFile, InputStream animationFile,
             InputStream flingAnimationFile, InputStream soundFile) throws IOException {
         // Read theme properties
-        Properties properties = new Properties();
-        properties.load(propertiesFile);
-        String shakeAnimationId = properties.getProperty(PROP_SHAKE_ANIMATION);
-        String resumeAnimationId = properties.getProperty(PROP_RESUME_ANIMATION);
-        String idleAnimationId = properties.getProperty(PROP_IDLE_ANIMATION);
-        String endIdleAnimationId = properties.getProperty(PROP_END_IDLE_ANIMATION);
-        String helpImageId = properties.getProperty(PROP_HELP_IMAGE);
-        String defaultImageId = properties.getProperty(PROP_DEFAULT_IMAGE);
-        height = (int) Util.getLongProperty(properties, PROP_HEIGHT, 455);
-        width = (int) Util.getLongProperty(properties, PROP_WIDTH, 320);
+        themeProperties = new Properties();
+        themeProperties.load(propertiesFile);
+        String shakeAnimationId = themeProperties.getProperty(PROP_SHAKE_ANIMATION);
+        String resumeAnimationId = themeProperties.getProperty(PROP_RESUME_ANIMATION);
+        String idleAnimationId = themeProperties.getProperty(PROP_IDLE_ANIMATION);
+        String endIdleAnimationId = themeProperties.getProperty(PROP_END_IDLE_ANIMATION);
+        String helpImageId = themeProperties.getProperty(PROP_HELP_IMAGE);
+        String defaultImageId = themeProperties.getProperty(PROP_DEFAULT_IMAGE);
+        height = (int) Util.getLongProperty(themeProperties, PROP_HEIGHT, 455);
+        width = (int) Util.getLongProperty(themeProperties, PROP_WIDTH, 320);
 
         // Load the list of features
         FeatureReader featureReader = new FeatureReader(featureFile);
@@ -163,6 +164,16 @@ public class Theme {
                 helpImage = image;
         }
 
+    }
+
+    /**
+     * @param propertyName
+     *            the name of the property to retrieve
+     * @return the value of a property, either specified in the
+     *         nounours.properties file, or the default value.
+     */
+    public String getProperty(String propertyName) {
+        return themeProperties.getProperty(propertyName);
     }
 
     /**
